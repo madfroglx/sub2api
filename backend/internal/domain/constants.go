@@ -22,6 +22,12 @@ const (
 	PlatformOpenAI      = "openai"
 	PlatformGemini      = "gemini"
 	PlatformAntigravity = "antigravity"
+	PlatformDeepSeek    = "deepseek"
+)
+
+const (
+	DefaultDeepSeekBaseURL = "https://api.deepseek.com"
+	DefaultDeepSeekModel   = "DeepSeek-V3.2"
 )
 
 // Account type constants

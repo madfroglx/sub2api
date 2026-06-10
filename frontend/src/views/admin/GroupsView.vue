@@ -3138,6 +3138,7 @@ const platformOptions = computed(() => [
   { value: "openai", label: "OpenAI" },
   { value: "gemini", label: "Gemini" },
   { value: "antigravity", label: "Antigravity" },
+  { value: "deepseek", label: "DeepSeek" },
 ]);
 
 const platformFilterOptions = computed(() => [
@@ -3146,6 +3147,7 @@ const platformFilterOptions = computed(() => [
   { value: "openai", label: "OpenAI" },
   { value: "gemini", label: "Gemini" },
   { value: "antigravity", label: "Antigravity" },
+  { value: "deepseek", label: "DeepSeek" },
 ]);
 
 const editStatusOptions = computed(() => [
@@ -3239,7 +3241,7 @@ const copyAccountsGroupOptions = computed(() => {
   );
   return eligibleGroups.map((g) => ({
     value: g.id,
-    label: `${g.name} (${g.account_count || 0} 个账号)`,
+    label: `${g.name} (${g.account_count || 0} 个供应商)`,
   }));
 });
 
@@ -3254,7 +3256,7 @@ const copyAccountsGroupOptionsForEdit = computed(() => {
   );
   return eligibleGroups.map((g) => ({
     value: g.id,
-    label: `${g.name} (${g.account_count || 0} 个账号)`,
+    label: `${g.name} (${g.account_count || 0} 个供应商)`,
   }));
 });
 

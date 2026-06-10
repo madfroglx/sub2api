@@ -1,4 +1,4 @@
-.PHONY: build build-backend build-frontend build-datamanagementd test test-backend test-frontend test-frontend-critical test-datamanagementd secret-scan
+.PHONY: build build-backend build-frontend build-datamanagementd dev dev-start dev-stop dev-restart dev-restart-all dev-status dev-logs deploy-sk test test-backend test-frontend test-frontend-critical test-datamanagementd secret-scan
 
 FRONTEND_CRITICAL_VITEST := \
 	src/views/auth/__tests__/LinuxDoCallbackView.spec.ts \
@@ -22,6 +22,29 @@ build-frontend:
 # 编译 datamanagementd（宿主机数据管理进程）
 build-datamanagementd:
 	@cd datamanagement && go build -o datamanagementd ./cmd/datamanagementd
+
+# 本地前后端开发服务
+dev dev-start:
+	@./scripts/dev.sh start
+
+dev-stop:
+	@./scripts/dev.sh stop
+
+# 默认只重启后端；前端由 Vite HMR 自动生效
+dev-restart:
+	@./scripts/dev.sh restart backend
+
+dev-restart-all:
+	@./scripts/dev.sh restart all
+
+dev-status:
+	@./scripts/dev.sh status
+
+dev-logs:
+	@./scripts/dev.sh logs
+
+deploy-sk:
+	@./scripts/deploy-sk.sh
 
 # 运行测试（后端 + 前端）
 test: test-backend test-frontend

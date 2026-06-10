@@ -132,6 +132,13 @@ type UpdateAccountRequest struct {
 	ConfirmMixedChannelRisk *bool          `json:"confirm_mixed_channel_risk"` // 用户确认混合渠道风险
 }
 
+func validateDeepSeekAccountType(platform, accountType string) error {
+	if platform == service.PlatformDeepSeek && strings.TrimSpace(accountType) != service.AccountTypeAPIKey {
+		return fmt.Errorf("DeepSeek accounts only support API Key type")
+	}
+	return nil
+}
+
 // BulkUpdateAccountsRequest represents the payload for bulk editing accounts
 type BulkUpdateAccountsRequest struct {
 	AccountIDs              []int64                   `json:"account_ids"`
@@ -522,6 +529,10 @@ func (h *AccountHandler) Create(c *gin.Context) {
 		response.BadRequest(c, "rate_multiplier must be >= 0")
 		return
 	}
+	if err := validateDeepSeekAccountType(req.Platform, req.Type); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
 	// base_rpm 输入校验：负值归零，超过 10000 截断
 	sanitizeExtraBaseRPM(req.Extra)
 
@@ -605,6 +616,17 @@ func (h *AccountHandler) Update(c *gin.Context) {
 	if req.RateMultiplier != nil && *req.RateMultiplier < 0 {
 		response.BadRequest(c, "rate_multiplier must be >= 0")
 		return
+	}
+	if req.Type != "" {
+		existingAccount, getErr := h.adminService.GetAccount(c.Request.Context(), accountID)
+		if getErr != nil {
+			response.NotFound(c, "Account not found")
+			return
+		}
+		if err := validateDeepSeekAccountType(existingAccount.Platform, req.Type); err != nil {
+			response.BadRequest(c, err.Error())
+			return
+		}
 	}
 	// base_rpm 输入校验：负值归零，超过 10000 截断
 	sanitizeExtraBaseRPM(req.Extra)
@@ -1335,6 +1357,15 @@ func (h *AccountHandler) BatchCreate(c *gin.Context) {
 					"name":    item.Name,
 					"success": false,
 					"error":   "rate_multiplier must be >= 0",
+				})
+				continue
+			}
+			if err := validateDeepSeekAccountType(item.Platform, item.Type); err != nil {
+				failed++
+				results = append(results, gin.H{
+					"name":    item.Name,
+					"success": false,
+					"error":   err.Error(),
 				})
 				continue
 			}

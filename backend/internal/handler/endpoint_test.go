@@ -82,6 +82,9 @@ func TestDeriveUpstreamEndpoint(t *testing.T) {
 		{"openai image generations", EndpointImagesGenerations, "/v1/images/generations", service.PlatformOpenAI, EndpointImagesGenerations},
 		{"openai image edits", EndpointImagesEdits, "/openai/v1/images/edits", service.PlatformOpenAI, EndpointImagesEdits},
 
+		// DeepSeek — Chat Completions only.
+		{"deepseek chat completions", EndpointChatCompletions, "/v1/chat/completions", service.PlatformDeepSeek, EndpointChatCompletions},
+
 		// Antigravity — uses inbound to pick Claude vs Gemini upstream.
 		{"antigravity claude", EndpointMessages, "/antigravity/v1/messages", service.PlatformAntigravity, EndpointMessages},
 		{"antigravity gemini", EndpointGeminiModels, "/antigravity/v1beta/models", service.PlatformAntigravity, EndpointGeminiModels},

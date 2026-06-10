@@ -70,8 +70,15 @@
       <!-- Platform Selection - Segmented Control Style -->
       <div>
         <label class="input-label">{{ t('admin.accounts.platform') }}</label>
-        <div class="mt-2 flex rounded-lg bg-gray-100 p-1 dark:bg-dark-700" data-tour="account-form-platform">
+        <div
+          :class="[
+            'mt-2 grid gap-1 rounded-lg bg-gray-100 p-1 dark:bg-dark-700',
+            platformGridClass
+          ]"
+          data-tour="account-form-platform"
+        >
           <button
+            v-if="isCreateAccountPlatformVisible('anthropic')"
             type="button"
             @click="form.platform = 'anthropic'"
             :class="[
@@ -85,6 +92,7 @@
             Anthropic
           </button>
           <button
+            v-if="isCreateAccountPlatformVisible('openai')"
             type="button"
             @click="form.platform = 'openai'"
             :class="[
@@ -110,6 +118,7 @@
             OpenAI
           </button>
           <button
+            v-if="isCreateAccountPlatformVisible('gemini')"
             type="button"
             @click="form.platform = 'gemini'"
             :class="[
@@ -135,6 +144,7 @@
             Gemini
           </button>
           <button
+            v-if="isCreateAccountPlatformVisible('antigravity')"
             type="button"
             @click="form.platform = 'antigravity'"
             :class="[
@@ -146,6 +156,20 @@
           >
             <Icon name="cloud" size="sm" />
             Antigravity
+          </button>
+          <button
+            v-if="isCreateAccountPlatformVisible('deepseek')"
+            type="button"
+            @click="form.platform = 'deepseek'"
+            :class="[
+              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              form.platform === 'deepseek'
+                ? 'bg-white text-cyan-600 shadow-sm dark:bg-dark-600 dark:text-cyan-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <Icon name="bolt" size="sm" />
+            DeepSeek
           </button>
         </div>
       </div>
@@ -1021,7 +1045,9 @@
                 ? 'https://api.openai.com'
                 : form.platform === 'gemini'
                   ? 'https://generativelanguage.googleapis.com'
-                  : 'https://api.anthropic.com'
+                  : form.platform === 'deepseek'
+                    ? 'https://api.deepseek.com'
+                    : 'https://api.anthropic.com'
             "
           />
           <p class="input-hint">{{ baseUrlHint }}</p>
@@ -1038,7 +1064,9 @@
                 ? 'sk-proj-...'
                 : form.platform === 'gemini'
                   ? 'AIza...'
-                  : 'sk-ant-...'
+                  : form.platform === 'deepseek'
+                    ? 'sk-...'
+                    : 'sk-ant-...'
             "
           />
           <p class="input-hint">{{ apiKeyHint }}</p>
@@ -3198,7 +3226,6 @@ import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import {
-  claudeModels,
   getPresetMappingsByPlatform,
   getModelsByPlatform,
   commonErrorCodes,
@@ -3280,12 +3307,14 @@ const oauthStepTitle = computed(() => {
 const baseUrlHint = computed(() => {
   if (form.platform === 'openai') return t('admin.accounts.openai.baseUrlHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.baseUrlHint')
+  if (form.platform === 'deepseek') return 'DeepSeek API Base URL'
   return t('admin.accounts.baseUrlHint')
 })
 
 const apiKeyHint = computed(() => {
   if (form.platform === 'openai') return t('admin.accounts.openai.apiKeyHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.apiKeyHint')
+  if (form.platform === 'deepseek') return 'DeepSeek API Key'
   return t('admin.accounts.apiKeyHint')
 })
 
@@ -3357,9 +3386,19 @@ interface TempUnschedRuleForm {
 // State
 const step = ref(1)
 const submitting = ref(false)
-const accountCategory = ref<'oauth-based' | 'apikey' | 'bedrock' | 'service_account'>('oauth-based') // UI selection for account category
+const createAccountVisiblePlatforms: AccountPlatform[] = ['deepseek']
+const isCreateAccountPlatformVisible = (platform: AccountPlatform) => createAccountVisiblePlatforms.includes(platform)
+const platformGridClass = computed(() => {
+  const count = createAccountVisiblePlatforms.length
+  if (count <= 1) return 'grid-cols-1'
+  if (count === 2) return 'grid-cols-2'
+  if (count === 3) return 'grid-cols-2 sm:grid-cols-3'
+  if (count === 4) return 'grid-cols-2 sm:grid-cols-4'
+  return 'grid-cols-2 sm:grid-cols-5'
+})
+const accountCategory = ref<'oauth-based' | 'apikey' | 'bedrock' | 'service_account'>('apikey') // UI selection for account category
 const addMethod = ref<AddMethod>('oauth') // For oauth-based: 'oauth' or 'setup-token'
-const apiKeyBaseUrl = ref('https://api.anthropic.com')
+const apiKeyBaseUrl = ref('https://api.deepseek.com')
 const apiKeyValue = ref('')
 
 const syncPreviewCredentials = computed(() => {
@@ -3684,8 +3723,8 @@ const tempUnschedPresets = computed(() => [
 const form = reactive({
   name: '',
   notes: '',
-  platform: 'anthropic' as AccountPlatform,
-  type: 'oauth' as AccountType, // Will be 'oauth', 'setup-token', or 'apikey'
+  platform: 'deepseek' as AccountPlatform,
+  type: 'apikey' as AccountType, // Will be 'oauth', 'setup-token', or 'apikey'
   credentials: {} as Record<string, unknown>,
   proxy_id: null as number | null,
   concurrency: 10,
@@ -3798,7 +3837,9 @@ watch(
         ? 'https://api.openai.com'
         : newPlatform === 'gemini'
           ? 'https://generativelanguage.googleapis.com'
-          : 'https://api.anthropic.com'
+          : newPlatform === 'deepseek'
+            ? 'https://api.deepseek.com'
+            : 'https://api.anthropic.com'
     // Clear model-related settings
     allowedModels.value = []
     modelMappings.value = []
@@ -3822,6 +3863,10 @@ watch(
     }
     if (newPlatform !== 'anthropic' && accountCategory.value === 'bedrock') {
       accountCategory.value = 'oauth-based'
+    }
+    if (newPlatform === 'deepseek') {
+      accountCategory.value = 'apikey'
+      openAIEndpointCapabilities.value = ['chat_completions']
     }
     // Reset Bedrock fields when switching platforms
     bedrockAccessKeyId.value = ''
@@ -4199,8 +4244,8 @@ const resetForm = () => {
   step.value = 1
   form.name = ''
   form.notes = ''
-  form.platform = 'anthropic'
-  form.type = 'oauth'
+  form.platform = 'deepseek'
+  form.type = 'apikey'
   form.credentials = {}
   form.proxy_id = null
   form.concurrency = 10
@@ -4209,9 +4254,9 @@ const resetForm = () => {
   form.rate_multiplier = 1
   form.group_ids = []
   form.expires_at = null
-  accountCategory.value = 'oauth-based'
+  accountCategory.value = 'apikey'
   addMethod.value = 'oauth'
-  apiKeyBaseUrl.value = 'https://api.anthropic.com'
+  apiKeyBaseUrl.value = 'https://api.deepseek.com'
   apiKeyValue.value = ''
   editQuotaLimit.value = null
   editQuotaDailyLimit.value = null
@@ -4225,7 +4270,7 @@ const resetForm = () => {
   modelMappings.value = []
   openAICompactModelMappings.value = []
   modelRestrictionMode.value = 'whitelist'
-  allowedModels.value = [...claudeModels] // Default fill related models
+  allowedModels.value = [...getModelsByPlatform('deepseek')] // Default fill related models
 
   antigravityModelRestrictionMode.value = 'mapping'
   antigravityWhitelistModels.value = []
@@ -4617,7 +4662,9 @@ const handleSubmit = async () => {
       ? 'https://api.openai.com'
       : form.platform === 'gemini'
         ? 'https://generativelanguage.googleapis.com'
-        : 'https://api.anthropic.com'
+        : form.platform === 'deepseek'
+          ? 'https://api.deepseek.com'
+          : 'https://api.anthropic.com'
 
   // Build credentials with optional model mapping
   const credentials: Record<string, unknown> = {

@@ -1052,6 +1052,14 @@ func (a *Account) IsOpenAI() bool {
 	return a.Platform == PlatformOpenAI
 }
 
+func (a *Account) IsDeepSeek() bool {
+	return a.Platform == PlatformDeepSeek
+}
+
+func (a *Account) IsOpenAIChatCompletionsCompatible() bool {
+	return a.IsOpenAI() || a.IsDeepSeek()
+}
+
 func (a *Account) IsAnthropic() bool {
 	return a.Platform == PlatformAnthropic
 }
@@ -1061,11 +1069,11 @@ func (a *Account) IsOpenAIOAuth() bool {
 }
 
 func (a *Account) IsOpenAIApiKey() bool {
-	return a.IsOpenAI() && a.Type == AccountTypeAPIKey
+	return a.IsOpenAIChatCompletionsCompatible() && a.Type == AccountTypeAPIKey
 }
 
 func (a *Account) GetOpenAIBaseURL() string {
-	if !a.IsOpenAI() {
+	if !a.IsOpenAIChatCompletionsCompatible() {
 		return ""
 	}
 	if a.Type == AccountTypeAPIKey {
@@ -1073,6 +1081,9 @@ func (a *Account) GetOpenAIBaseURL() string {
 		if baseURL != "" {
 			return baseURL
 		}
+	}
+	if a.IsDeepSeek() {
+		return DefaultDeepSeekBaseURL
 	}
 	return "https://api.openai.com"
 }
@@ -1139,6 +1150,9 @@ func (a *Account) SupportsOpenAIEndpointCapability(capability OpenAIEndpointCapa
 	}
 	if capability == "" {
 		return true
+	}
+	if a.IsDeepSeek() {
+		return a.Type == AccountTypeAPIKey && capability == OpenAIEndpointCapabilityChatCompletions
 	}
 	if !a.IsOpenAI() {
 		return false
@@ -1208,6 +1222,12 @@ func (a *Account) openAIEndpointCapabilitySet() (map[string]bool, bool) {
 }
 
 func (a *Account) SupportsOpenAIImageCapability(capability OpenAIImagesCapability) bool {
+	if a == nil {
+		return false
+	}
+	if capability == "" {
+		return true
+	}
 	if !a.IsOpenAI() {
 		return false
 	}
