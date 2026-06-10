@@ -26,6 +26,11 @@ make dev-restart
 
 Local runtime state is under `.dev/`.
 
+## Code Change Workflow
+
+After code edits, do not run frontend builds, backend builds, or deployment by default.
+Only build or deploy when the user explicitly asks for it.
+
 ## Deploy To sk
 
 Use:
