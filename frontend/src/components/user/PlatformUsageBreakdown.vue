@@ -56,9 +56,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-// 与 UserDashboardStats 保持一致：把"总值 - 各平台之和"的差作为"其他"行展示，
-// 避免 tooltip 内各平台费用加总与列首总值对不上。
-const OTHER_THRESHOLD = 0.0001
+const VISIBLE_PLATFORMS = new Set(['deepseek'])
 
 interface BreakdownRow {
   platform: string
@@ -70,21 +68,10 @@ interface BreakdownRow {
 const sortedBreakdown = computed<BreakdownRow[]>(() => {
   const list = props.byPlatform ?? []
   const rows: BreakdownRow[] = [...list]
+    .filter((item) => VISIBLE_PLATFORMS.has(item.platform))
     .sort((a, b) => b.total_actual_cost - a.total_actual_cost)
     .map((p) => ({ ...p }))
 
-  const sumTotal = rows.reduce((s, r) => s + r.total_actual_cost, 0)
-  const sumToday = rows.reduce((s, r) => s + r.today_actual_cost, 0)
-  const diffTotal = Math.max(0, props.total - sumTotal)
-  const diffToday = Math.max(0, props.today - sumToday)
-  if (diffTotal > OTHER_THRESHOLD || diffToday > OTHER_THRESHOLD) {
-    rows.push({
-      platform: '__other__',
-      today_actual_cost: diffToday,
-      total_actual_cost: diffTotal,
-      isOther: true
-    })
-  }
   return rows
 })
 
@@ -94,7 +81,8 @@ const PLATFORM_LABELS: Record<string, string> = {
   anthropic: 'Claude',
   openai: 'OpenAI',
   gemini: 'Gemini',
-  antigravity: 'Antigravity'
+  antigravity: 'Antigravity',
+  deepseek: 'DeepSeek'
 }
 
 function platformLabel(platform: string): string {

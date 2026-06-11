@@ -445,6 +445,9 @@ func (r *userRepository) ListWithFilters(ctx context.Context, params pagination.
 	if filters.Role != "" {
 		q = q.Where(dbuser.RoleEQ(filters.Role))
 	}
+	if len(filters.ExcludeRoles) > 0 {
+		q = q.Where(dbuser.RoleNotIn(filters.ExcludeRoles...))
+	}
 	if filters.Search != "" {
 		q = q.Where(
 			dbuser.Or(

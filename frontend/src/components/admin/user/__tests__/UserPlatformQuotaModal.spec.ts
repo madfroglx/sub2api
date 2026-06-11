@@ -79,34 +79,35 @@ describe('UserPlatformQuotaModal', () => {
     expect(apiMocks.getPlatformQuotas).toHaveBeenCalledWith(99)
   })
 
-  it('空数据渲染 4 个 platform 行', async () => {
+  it('空数据只渲染 DeepSeek platform 行', async () => {
     const w = await mountAndOpen()
     const html = w.html()
-    expect(html).toContain('anthropic')
-    expect(html).toContain('openai')
-    expect(html).toContain('gemini')
-    expect(html).toContain('antigravity')
+    expect(html).toContain('deepseek')
+    expect(html).not.toContain('anthropic')
+    expect(html).not.toContain('openai')
+    expect(html).not.toContain('gemini')
+    expect(html).not.toContain('antigravity')
   })
 
   it('已有数据正确填充 limit input', async () => {
     apiMocks.getPlatformQuotas.mockResolvedValueOnce({
       platform_quotas: [
-        { platform: 'anthropic', daily_limit_usd: 10, weekly_limit_usd: null, monthly_limit_usd: null,
+        { platform: 'deepseek', daily_limit_usd: 10, weekly_limit_usd: null, monthly_limit_usd: null,
           daily_usage_usd: 3.2, weekly_usage_usd: 0, monthly_usage_usd: 0 },
       ],
     })
     const w = await mountAndOpen()
     const inputs = w.findAll('input[type=number]')
-    // 5 platforms × 3 windows = 15 inputs
-    expect(inputs.length).toBe(15)
-    // 第一个 input 是 anthropic.daily = 10
+    // DeepSeek × 3 windows = 3 inputs
+    expect(inputs.length).toBe(3)
+    // 第一个 input 是 deepseek.daily = 10
     expect((inputs[0].element as HTMLInputElement).value).toBe('10')
   })
 
-  it('保存提交完整 4 platform payload', async () => {
+  it('保存只提交 DeepSeek platform payload', async () => {
     apiMocks.getPlatformQuotas.mockResolvedValueOnce({
       platform_quotas: [
-        { platform: 'openai', daily_limit_usd: null, weekly_limit_usd: 20, monthly_limit_usd: null,
+        { platform: 'deepseek', daily_limit_usd: null, weekly_limit_usd: 20, monthly_limit_usd: null,
           daily_usage_usd: 0, weekly_usage_usd: 0, monthly_usage_usd: 0 },
       ],
     })
@@ -120,16 +121,16 @@ describe('UserPlatformQuotaModal', () => {
     expect(apiMocks.updatePlatformQuotas).toHaveBeenCalledTimes(1)
     const [uid, payload] = apiMocks.updatePlatformQuotas.mock.calls[0]
     expect(uid).toBe(99)
-    expect(payload).toHaveLength(5) // all platforms always submitted
-    const openai = payload.find((p: any) => p.platform === 'openai')
-    expect(openai.weekly_limit_usd).toBe(20)
+    expect(payload).toHaveLength(1)
+    const deepseek = payload.find((p: any) => p.platform === 'deepseek')
+    expect(deepseek.weekly_limit_usd).toBe(20)
   })
 
   it('全部清空把所有 limit 置 null（确认通过）', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
     apiMocks.getPlatformQuotas.mockResolvedValueOnce({
       platform_quotas: [
-        { platform: 'anthropic', daily_limit_usd: 10, weekly_limit_usd: 50, monthly_limit_usd: 100,
+        { platform: 'deepseek', daily_limit_usd: 10, weekly_limit_usd: 50, monthly_limit_usd: 100,
           daily_usage_usd: 0, weekly_usage_usd: 0, monthly_usage_usd: 0 },
       ],
     })
@@ -151,7 +152,7 @@ describe('UserPlatformQuotaModal', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
     apiMocks.getPlatformQuotas.mockResolvedValueOnce({
       platform_quotas: [
-        { platform: 'anthropic', daily_limit_usd: 10, weekly_limit_usd: 50, monthly_limit_usd: 100,
+        { platform: 'deepseek', daily_limit_usd: 10, weekly_limit_usd: 50, monthly_limit_usd: 100,
           daily_usage_usd: 0, weekly_usage_usd: 0, monthly_usage_usd: 0 },
       ],
     })
@@ -160,7 +161,7 @@ describe('UserPlatformQuotaModal', () => {
     await clearBtn!.trigger('click')
     await flushPromises()
     expect(confirmSpy).toHaveBeenCalledTimes(1)
-    // anthropic daily 应保持 10（未被清空）
+    // deepseek daily 应保持 10（未被清空）
     const inputs = w.findAll('input[type=number]')
     const dailyVal = (inputs[0].element as HTMLInputElement).value
     expect(dailyVal).toBe('10')
@@ -182,9 +183,9 @@ describe('UserPlatformQuotaModal', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
     const w = await mountAndOpen()
     const resetBtns = w.findAll('button').filter((b) => b.text() === '↻')
-    await resetBtns[0].trigger('click') // 第一个是 anthropic.daily
+    await resetBtns[0].trigger('click') // 第一个是 deepseek.daily
     await flushPromises()
-    expect(apiMocks.resetPlatformQuotaWindow).toHaveBeenCalledWith(99, 'anthropic', 'daily')
+    expect(apiMocks.resetPlatformQuotaWindow).toHaveBeenCalledWith(99, 'deepseek', 'daily')
     confirmSpy.mockRestore()
   })
 

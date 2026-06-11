@@ -24,8 +24,8 @@
                 <h2 class="truncate text-2xl font-semibold text-gray-900 dark:text-white">
                   {{ displayName }}
                 </h2>
-                <span :class="['badge', user?.role === 'admin' ? 'badge-primary' : 'badge-gray']">
-                  {{ user?.role === 'admin' ? t('profile.administrator') : t('profile.user') }}
+                <span :class="['badge', user?.role === 'admin' || user?.role === 'operator_admin' ? 'badge-primary' : 'badge-gray']">
+                  {{ roleLabel }}
                 </span>
                 <span
                   :class="['badge', user?.status === 'active' ? 'badge-success' : 'badge-danger']"
@@ -245,6 +245,11 @@ const primaryEmailDisplay = computed(() => {
   return email
 })
 const avatarInitial = computed(() => displayName.value.charAt(0).toUpperCase() || 'U')
+const roleLabel = computed(() => {
+  if (props.user?.role === 'admin') return t('profile.administrator')
+  if (props.user?.role === 'operator_admin') return t('profile.operatorAdmin')
+  return t('profile.user')
+})
 const memberSinceLabel = computed(() => {
   const raw = props.user?.created_at?.trim()
   if (!raw) {

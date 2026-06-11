@@ -34,7 +34,7 @@ import type { PlatformQuotaItem, PlatformQuotaPlatform } from '@/api/admin/users
 const props = defineProps<{ quotas?: PlatformQuotaItem[] }>()
 const { t } = useI18n()
 
-const PLATFORM_ORDER: PlatformQuotaPlatform[] = ['anthropic', 'openai', 'gemini', 'antigravity', 'deepseek']
+const PLATFORM_ORDER: PlatformQuotaPlatform[] = ['deepseek']
 
 // 仅展示「至少一档限额非空」的平台（配额列，非用量列）
 const configured = computed(() => {
@@ -42,9 +42,10 @@ const configured = computed(() => {
   return props.quotas
     .filter(
       (q) =>
-        q.daily_limit_usd != null ||
-        q.weekly_limit_usd != null ||
-        q.monthly_limit_usd != null
+        PLATFORM_ORDER.includes(q.platform) &&
+        (q.daily_limit_usd != null ||
+          q.weekly_limit_usd != null ||
+          q.monthly_limit_usd != null)
     )
     .slice()
     .sort((a, b) => PLATFORM_ORDER.indexOf(a.platform) - PLATFORM_ORDER.indexOf(b.platform))

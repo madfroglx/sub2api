@@ -58,7 +58,7 @@ export function formatNumber(num: number | null | undefined): string {
  * @param currency 货币代码，保留用于调用兼容
  * @returns 格式化后的字符串，如 "¥1.25"
  */
-export function formatCurrency(amount: number | null | undefined, currency: string = 'USD'): string {
+export function formatCurrency(amount: number | null | undefined, currency: string = 'RMB'): string {
   void currency
   if (amount === null || amount === undefined) return '¥0.00'
 

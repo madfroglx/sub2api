@@ -17,6 +17,9 @@ func RegisterAdminRoutes(
 	admin := v1.Group("/admin")
 	admin.Use(gin.HandlerFunc(adminAuth))
 	{
+		superAdmin := admin.Group("")
+		superAdmin.Use(middleware.AdminOnly())
+
 		// 仪表盘
 		registerDashboardRoutes(admin, h)
 
@@ -30,7 +33,7 @@ func RegisterAdminRoutes(
 		registerAccountRoutes(admin, h)
 
 		// 公告管理
-		registerAnnouncementRoutes(admin, h)
+		registerAnnouncementRoutes(superAdmin, h)
 
 		// OpenAI OAuth
 		registerOpenAIOAuthRoutes(admin, h)
@@ -42,16 +45,16 @@ func RegisterAdminRoutes(
 		registerAntigravityOAuthRoutes(admin, h)
 
 		// 代理管理
-		registerProxyRoutes(admin, h)
+		registerProxyRoutes(superAdmin, h)
 
 		// 卡密管理
 		registerRedeemCodeRoutes(admin, h)
 
 		// 优惠码管理
-		registerPromoCodeRoutes(admin, h)
+		registerPromoCodeRoutes(superAdmin, h)
 
 		// 系统设置
-		registerSettingsRoutes(admin, h)
+		registerSettingsRoutes(superAdmin, h)
 
 		// 数据管理
 		registerDataManagementRoutes(admin, h)
@@ -60,13 +63,13 @@ func RegisterAdminRoutes(
 		registerBackupRoutes(admin, h)
 
 		// 运维监控（Ops）
-		registerOpsRoutes(admin, h)
+		registerOpsRoutes(superAdmin, h)
 
 		// 系统管理
 		registerSystemRoutes(admin, h)
 
 		// 订阅管理
-		registerSubscriptionRoutes(admin, h)
+		registerSubscriptionRoutes(superAdmin, h)
 
 		// 使用记录管理
 		registerUsageRoutes(admin, h)

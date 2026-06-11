@@ -251,8 +251,10 @@ const PLATFORM_LABELS: Record<string, string> = {
   anthropic: 'Claude',
   openai: 'OpenAI',
   gemini: 'Gemini',
-  antigravity: 'Antigravity'
+  antigravity: 'Antigravity',
+  deepseek: 'DeepSeek'
 }
+const PLATFORM_ORDER = ['deepseek']
 
 const platformLabel = (p: string) => PLATFORM_LABELS[p] ?? p
 
@@ -261,10 +263,6 @@ const sortedPlatforms = computed(() => {
   return [...list].sort((a, b) => b.total_actual_cost - a.total_actual_cost)
 })
 
-// 处理"各平台之和 < 总值"的差值：后端按平台聚合时过滤了无法归属平台的行
-// （group 与 account 都缺 platform）。这里把差值作为"其他"卡片显式展示，
-// 避免 Row 1 总值与 Row 3 平台拆分加总对不上、用户困惑。
-const OTHER_THRESHOLD = 0.0001
 const platformCards = computed<FusedPlatformCard[]>(() => {
   // 建立 by_platform Map
   const byPlat = new Map<string, (typeof sortedPlatforms.value)[number]>()
@@ -274,11 +272,9 @@ const platformCards = computed<FusedPlatformCard[]>(() => {
   const byQuota = new Map<string, PlatformQuotaItem>()
   for (const q of props.platformQuotas ?? []) byQuota.set(q.platform, q)
 
-  // union 平台集合。后端 by_platform / quota 接口均不会返回 platform='__other__'，
-  // 无需显式排除；__other__ 由下方差值补差逻辑单独追加。
-  const platforms = new Set<string>([...byPlat.keys(), ...byQuota.keys()])
-
-  const PLATFORM_ORDER = ['anthropic', 'openai', 'gemini', 'antigravity', 'deepseek']
+  const platforms = new Set<string>(
+    [...byPlat.keys(), ...byQuota.keys()].filter((platform) => PLATFORM_ORDER.includes(platform))
+  )
   const cards: FusedPlatformCard[] = []
 
   for (const p of platforms) {
@@ -302,25 +298,6 @@ const platformCards = computed<FusedPlatformCard[]>(() => {
     if (bi === -1) return -1
     return ai - bi
   })
-
-  // __other__ 补差逻辑：只对 by_platform 有 usage 数据的总和计算
-  const total = props.stats?.total_actual_cost ?? 0
-  const today = props.stats?.today_actual_cost ?? 0
-  const sumTotal = cards.reduce((s, c) => s + c.total_actual_cost, 0)
-  const sumToday = cards.reduce((s, c) => s + c.today_actual_cost, 0)
-  const diffTotal = Math.max(0, total - sumTotal)
-  const diffToday = Math.max(0, today - sumToday)
-
-  if (diffTotal > OTHER_THRESHOLD || diffToday > OTHER_THRESHOLD) {
-    cards.push({
-      platform: '__other__',
-      total_actual_cost: diffTotal,
-      today_actual_cost: diffToday,
-      total_requests: 0,
-      total_tokens: 0,
-      isOther: true,
-    })
-  }
 
   return cards
 })

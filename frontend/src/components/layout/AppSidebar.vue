@@ -191,6 +191,7 @@ interface NavItem {
   icon: unknown
   iconSvg?: string
   hideInSimpleMode?: boolean
+  superAdminOnly?: boolean
   children?: NavItem[]
   /**
    * When true, the parent item only toggles the expand/collapse state and
@@ -212,6 +213,7 @@ function applyFeatureFlags(items: NavItem[]): NavItem[] {
   const out: NavItem[] = []
   for (const item of items) {
     if (item.featureFlag && item.featureFlag() === false) continue
+    if (item.superAdminOnly && !authStore.isSuperAdmin) continue
     if (item.children) {
       out.push({ ...item, children: applyFeatureFlags(item.children) })
     } else {
@@ -713,7 +715,7 @@ const customMenuItemsForAdmin = computed(() => {
 const adminNavItems = computed((): NavItem[] => {
   const baseItems: NavItem[] = [
     { path: '/admin/dashboard', label: t('nav.dashboard'), icon: DashboardIcon },
-    { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, featureFlag: flagOpsMonitoring },
+    { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, superAdminOnly: true, featureFlag: flagOpsMonitoring },
     { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, hideInSimpleMode: true },
     { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, hideInSimpleMode: true },
     {
@@ -727,13 +729,13 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, featureFlag: flagChannelMonitor },
       ],
     },
-    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, hideInSimpleMode: true },
+    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, hideInSimpleMode: true, superAdminOnly: true },
     { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon },
-    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon },
-    { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon },
+    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, superAdminOnly: true },
+    { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon, superAdminOnly: true },
     { path: '/admin/risk-control', label: t('nav.riskControl'), icon: ShieldIcon, hideInSimpleMode: true, featureFlag: flagRiskControl },
     { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, hideInSimpleMode: true },
-    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, hideInSimpleMode: true },
+    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, hideInSimpleMode: true, superAdminOnly: true },
     {
       path: '/admin/affiliates',
       label: t('nav.affiliateManagement'),
@@ -769,14 +771,18 @@ const adminNavItems = computed((): NavItem[] => {
   if (authStore.isSimpleMode) {
     const filtered = visible.filter(item => !item.hideInSimpleMode)
     filtered.push({ path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon })
-    filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+    if (authStore.isSuperAdmin) {
+      filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+    }
     for (const cm of customMenuItemsForAdmin.value) {
       filtered.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg })
     }
     return filtered
   }
 
-  visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+  if (authStore.isSuperAdmin) {
+    visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+  }
   for (const cm of customMenuItemsForAdmin.value) {
     visible.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg })
   }

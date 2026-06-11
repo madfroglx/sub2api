@@ -35,7 +35,7 @@ describe('UserPlatformQuotaCell', () => {
 
   it('平台有记录但全部 limit 为 null 时视为未配置', () => {
     const w = mount(UserPlatformQuotaCell, {
-      props: { quotas: [item({ platform: 'openai', daily_usage_usd: 5 })] },
+      props: { quotas: [item({ platform: 'deepseek', daily_usage_usd: 5 })] },
     })
     expect(w.html()).toContain('admin.users.platformQuota.cellNotConfigured')
   })
@@ -44,31 +44,34 @@ describe('UserPlatformQuotaCell', () => {
     const w = mount(UserPlatformQuotaCell, {
       props: {
         quotas: [
-          item({ platform: 'anthropic', daily_limit_usd: 100, daily_usage_usd: 30,
+          item({ platform: 'deepseek', daily_limit_usd: 100, daily_usage_usd: 30,
                  weekly_limit_usd: null, weekly_usage_usd: 0,
                  monthly_limit_usd: 2000, monthly_usage_usd: 90.5 }),
         ],
       },
     })
     const html = w.html()
-    expect(html).toContain('anthropic')
+    expect(html).toContain('deepseek')
     expect(html).toContain('30/100')
     expect(html).toContain('0/—')
     expect(html).toContain('90.5/2000')
   })
 
-  it('多平台按 anthropic→openai→gemini→antigravity 顺序，仅展示有限额的', () => {
+  it('仅展示 DeepSeek 且忽略其他平台', () => {
     const w = mount(UserPlatformQuotaCell, {
       props: {
         quotas: [
           item({ platform: 'gemini', monthly_limit_usd: 50 }),
           item({ platform: 'anthropic', daily_limit_usd: 10 }),
-          item({ platform: 'openai', daily_usage_usd: 9 }),
+          item({ platform: 'deepseek', weekly_limit_usd: 20 }),
         ],
       },
     })
     const text = w.text()
-    expect(text.indexOf('anthropic')).toBeLessThan(text.indexOf('gemini'))
+    expect(text).toContain('deepseek')
+    expect(text).toContain('0/20')
+    expect(text).not.toContain('anthropic')
     expect(text).not.toContain('openai')
+    expect(text).not.toContain('gemini')
   })
 })

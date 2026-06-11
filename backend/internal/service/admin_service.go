@@ -135,6 +135,7 @@ type CreateUserInput struct {
 	Password      string
 	Username      string
 	Notes         string
+	Role          *string
 	Balance       *float64
 	Concurrency   int
 	RPMLimit      int
@@ -146,6 +147,7 @@ type UpdateUserInput struct {
 	Password      string
 	Username      *string
 	Notes         *string
+	Role          *string
 	Balance       *float64 // 使用指针区分"未提供"和"设置为0"
 	Concurrency   *int     // 使用指针区分"未提供"和"设置为0"
 	RPMLimit      *int     // 使用指针区分"未提供"和"设置为0"
@@ -701,11 +703,21 @@ func (s *adminServiceImpl) CreateUser(ctx context.Context, input *CreateUserInpu
 		balance = s.settingService.GetDefaultBalance(ctx)
 	}
 
+	role := RoleUser
+	if input.Role != nil {
+		switch *input.Role {
+		case RoleAdmin, RoleOperatorAdmin, RoleUser:
+			role = *input.Role
+		default:
+			return nil, errors.New("invalid user role")
+		}
+	}
+
 	user := &User{
 		Email:         input.Email,
 		Username:      input.Username,
 		Notes:         input.Notes,
-		Role:          RoleUser, // Always create as regular user, never admin
+		Role:          role,
 		Balance:       balance,
 		Concurrency:   input.Concurrency,
 		RPMLimit:      input.RPMLimit,
@@ -754,8 +766,8 @@ func (s *adminServiceImpl) UpdateUser(ctx context.Context, id int64, input *Upda
 		return nil, err
 	}
 
-	// Protect admin users: cannot disable admin accounts
-	if user.Role == "admin" && input.Status == "disabled" {
+	// Protect super admin users: cannot disable super admin accounts
+	if user.Role == RoleAdmin && input.Status == "disabled" {
 		return nil, errors.New("cannot disable admin user")
 	}
 
@@ -779,6 +791,15 @@ func (s *adminServiceImpl) UpdateUser(ctx context.Context, id int64, input *Upda
 	}
 	if input.Notes != nil {
 		user.Notes = *input.Notes
+	}
+
+	if input.Role != nil {
+		switch *input.Role {
+		case RoleAdmin, RoleOperatorAdmin, RoleUser:
+			user.Role = *input.Role
+		default:
+			return nil, errors.New("invalid user role")
+		}
 	}
 
 	if input.Status != "" {

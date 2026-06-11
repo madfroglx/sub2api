@@ -12,6 +12,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
 	"github.com/Wei-Shaw/sub2api/internal/handler/quotaview"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
+	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -46,12 +47,31 @@ func NewUserHandler(
 	}
 }
 
+func (h *UserHandler) ensureRegularUserTargetForOperator(c *gin.Context, userID int64) bool {
+	role, _ := middleware.GetUserRoleFromContext(c)
+	if role == service.RoleAdmin {
+		return true
+	}
+
+	user, err := h.adminService.GetUser(c.Request.Context(), userID)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return false
+	}
+	if user.Role != service.RoleUser {
+		response.Forbidden(c, "Operators can only manage regular users")
+		return false
+	}
+	return true
+}
+
 // CreateUserRequest represents admin create user request
 type CreateUserRequest struct {
 	Email         string   `json:"email" binding:"required,email"`
 	Password      string   `json:"password" binding:"required,min=6"`
 	Username      string   `json:"username"`
 	Notes         string   `json:"notes"`
+	Role          *string  `json:"role" binding:"omitempty,oneof=admin operator_admin user"`
 	Balance       *float64 `json:"balance"`
 	Concurrency   int      `json:"concurrency"`
 	RPMLimit      int      `json:"rpm_limit"`
@@ -65,6 +85,7 @@ type UpdateUserRequest struct {
 	Password      string   `json:"password" binding:"omitempty,min=6"`
 	Username      *string  `json:"username"`
 	Notes         *string  `json:"notes"`
+	Role          *string  `json:"role" binding:"omitempty,oneof=admin operator_admin user"`
 	Balance       *float64 `json:"balance"`
 	Concurrency   *int     `json:"concurrency"`
 	RPMLimit      *int     `json:"rpm_limit"`
@@ -123,6 +144,13 @@ func (h *UserHandler) List(c *gin.Context) {
 		Search:     search,
 		GroupName:  strings.TrimSpace(c.Query("group_name")),
 		Attributes: parseAttributeFilters(c),
+	}
+	if role, _ := middleware.GetUserRoleFromContext(c); role != service.RoleAdmin {
+		filters.ExcludeRoles = []string{service.RoleAdmin}
+		if filters.Role == service.RoleAdmin {
+			response.Paginated(c, []UserWithConcurrency{}, 0, page, pageSize)
+			return
+		}
 	}
 	if raw := strings.TrimSpace(c.Query("api_key_group_id")); raw != "" {
 		if id, parseErr := strconv.ParseInt(raw, 10, 64); parseErr == nil && id > 0 {
@@ -262,12 +290,18 @@ func (h *UserHandler) Create(c *gin.Context) {
 		response.BadRequest(c, "Invalid request: "+err.Error())
 		return
 	}
+	role, _ := middleware.GetUserRoleFromContext(c)
+	if role != service.RoleAdmin && req.Role != nil {
+		response.Forbidden(c, "Only super administrators can assign user roles")
+		return
+	}
 
 	user, err := h.adminService.CreateUser(c.Request.Context(), &service.CreateUserInput{
 		Email:         req.Email,
 		Password:      req.Password,
 		Username:      req.Username,
 		Notes:         req.Notes,
+		Role:          req.Role,
 		Balance:       req.Balance,
 		Concurrency:   req.Concurrency,
 		RPMLimit:      req.RPMLimit,
@@ -296,12 +330,22 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
+	role, _ := middleware.GetUserRoleFromContext(c)
+	if role != service.RoleAdmin && req.Role != nil {
+		response.Forbidden(c, "Only super administrators can change user roles")
+		return
+	}
+	if !h.ensureRegularUserTargetForOperator(c, userID) {
+		return
+	}
+
 	// 使用指针类型直接传递，nil 表示未提供该字段
 	user, err := h.adminService.UpdateUser(c.Request.Context(), userID, &service.UpdateUserInput{
 		Email:         req.Email,
 		Password:      req.Password,
 		Username:      req.Username,
 		Notes:         req.Notes,
+		Role:          req.Role,
 		Balance:       req.Balance,
 		Concurrency:   req.Concurrency,
 		RPMLimit:      req.RPMLimit,
@@ -326,6 +370,12 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		return
 	}
 
+	role, _ := middleware.GetUserRoleFromContext(c)
+	if role != service.RoleAdmin {
+		response.Forbidden(c, "Only super administrators can delete users")
+		return
+	}
+
 	err = h.adminService.DeleteUser(c.Request.Context(), userID)
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -341,6 +391,9 @@ func (h *UserHandler) UpdateBalance(c *gin.Context) {
 	userID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		response.BadRequest(c, "Invalid user ID")
+		return
+	}
+	if !h.ensureRegularUserTargetForOperator(c, userID) {
 		return
 	}
 
