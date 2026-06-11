@@ -11,7 +11,7 @@
 
   <div v-else class="home-page h-screen min-h-svh overflow-hidden bg-[#f6f8ff] text-slate-950 dark:bg-[#171622] dark:text-white">
     <header class="relative z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#171622]/90">
-      <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <nav class="flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         <router-link to="/home" class="flex min-w-0 items-center gap-3">
           <span class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-slate-200 dark:bg-[#222033] dark:ring-white/10">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
@@ -67,7 +67,7 @@
     </header>
 
     <main class="home-scroll-container relative h-[calc(100svh-4rem)] overflow-y-auto overflow-x-hidden">
-      <section class="relative mx-auto flex min-h-full max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8">
+      <section class="relative flex min-h-full w-full flex-col px-4 py-5 sm:px-6 lg:px-8">
         <div class="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_50%_0%,rgba(90,117,255,0.16),transparent_58%)] dark:bg-[radial-gradient(circle_at_50%_0%,rgba(90,117,255,0.22),transparent_58%)]"></div>
 
         <div class="relative text-center">
@@ -191,7 +191,7 @@
               </label>
             </div>
 
-            <div class="home-model-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
+            <div class="home-model-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
               <article
                 v-for="model in visibleModels"
                 :key="model.name"
@@ -256,7 +256,7 @@
       </section>
 
       <footer id="about" class="border-t border-slate-200 bg-white px-4 py-8 text-sm text-slate-500 dark:border-white/[0.08] dark:bg-[#14131d] dark:text-gray-400 sm:px-6 lg:px-8">
-        <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center md:flex-row">
+        <div class="flex w-full flex-col items-center justify-between gap-4 text-center md:flex-row">
           <p>&copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}</p>
           <div class="flex flex-wrap items-center justify-center gap-3">
             <router-link to="/legal/user-agreement" class="transition hover:text-slate-950 dark:hover:text-white">用户协议</router-link>

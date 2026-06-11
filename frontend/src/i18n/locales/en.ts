@@ -1184,7 +1184,7 @@ export default {
     linkedProfileSourcesDescription: 'Some profile details may stay synced from third-party sign-in methods.',
     securityTitle: 'Security Settings',
     securityDescription: 'Password, two-factor authentication, and alerts live in the right rail.',
-    administrator: 'Administrator',
+    administrator: 'Super Admin',
     user: 'User',
     username: 'Username',
     email: 'Email',
@@ -1807,7 +1807,7 @@ export default {
       searchAuthorizedGroups: 'Search authorized groups...',
       allApiKeyGroups: 'All API Key Groups',
       searchApiKeyGroups: 'Search API Key groups...',
-      admin: 'Admin',
+      admin: 'Super Admin',
       user: 'User',
       disabled: 'Disabled',
       email: 'Email',
@@ -1969,7 +1969,7 @@ export default {
       createdAt: 'Created',
       totalRecharged: 'Total Recharged',
       roles: {
-        admin: 'Admin',
+        admin: 'Super Admin',
         user: 'User'
       },
       // Settings Dropdowns

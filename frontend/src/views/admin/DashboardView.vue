@@ -110,24 +110,19 @@
                 <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatTokens(stats.today_tokens) }}
                 </p>
-                <p class="text-xs">
-                  <span
-                    class="text-green-600 dark:text-green-400"
-                    :title="t('admin.dashboard.actual')"
-                    >¥{{ formatCost(stats.today_actual_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-orange-500 dark:text-orange-400"
-                    :title="t('admin.dashboard.accountCost')"
-                    >¥{{ formatCost(stats.today_account_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-gray-400 dark:text-gray-500"
-                    :title="t('admin.dashboard.standard')"
-                    >¥{{ formatCost(stats.today_cost) }}</span
-                  >
+                <p class="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] leading-4">
+                  <span :title="t('admin.dashboard.actual')">
+                    <span class="text-gray-500 dark:text-gray-400">{{ t('admin.dashboard.actual') }}</span>
+                    <span class="text-green-600 dark:text-green-400"> ¥{{ formatCost(stats.today_actual_cost) }}</span>
+                  </span>
+                  <span :title="t('admin.dashboard.accountCost')">
+                    <span class="text-gray-500 dark:text-gray-400">{{ t('admin.dashboard.accountCost') }}</span>
+                    <span class="text-orange-500 dark:text-orange-400"> ¥{{ formatCost(stats.today_account_cost) }}</span>
+                  </span>
+                  <span :title="t('admin.dashboard.standard')">
+                    <span class="text-gray-500 dark:text-gray-400">{{ t('admin.dashboard.standard') }}</span>
+                    <span class="text-gray-400 dark:text-gray-500"> ¥{{ formatCost(stats.today_cost) }}</span>
+                  </span>
                 </p>
               </div>
             </div>
@@ -146,24 +141,19 @@
                 <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatTokens(stats.total_tokens) }}
                 </p>
-                <p class="text-xs">
-                  <span
-                    class="text-green-600 dark:text-green-400"
-                    :title="t('admin.dashboard.actual')"
-                    >¥{{ formatCost(stats.total_actual_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-orange-500 dark:text-orange-400"
-                    :title="t('admin.dashboard.accountCost')"
-                    >¥{{ formatCost(stats.total_account_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-gray-400 dark:text-gray-500"
-                    :title="t('admin.dashboard.standard')"
-                    >¥{{ formatCost(stats.total_cost) }}</span
-                  >
+                <p class="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] leading-4">
+                  <span :title="t('admin.dashboard.actual')">
+                    <span class="text-gray-500 dark:text-gray-400">{{ t('admin.dashboard.actual') }}</span>
+                    <span class="text-green-600 dark:text-green-400"> ¥{{ formatCost(stats.total_actual_cost) }}</span>
+                  </span>
+                  <span :title="t('admin.dashboard.accountCost')">
+                    <span class="text-gray-500 dark:text-gray-400">{{ t('admin.dashboard.accountCost') }}</span>
+                    <span class="text-orange-500 dark:text-orange-400"> ¥{{ formatCost(stats.total_account_cost) }}</span>
+                  </span>
+                  <span :title="t('admin.dashboard.standard')">
+                    <span class="text-gray-500 dark:text-gray-400">{{ t('admin.dashboard.standard') }}</span>
+                    <span class="text-gray-400 dark:text-gray-500"> ¥{{ formatCost(stats.total_cost) }}</span>
+                  </span>
                 </p>
               </div>
             </div>

@@ -1188,7 +1188,7 @@ export default {
     linkedProfileSourcesDescription: '部分头像和昵称可能同步自第三方登录方式。',
     securityTitle: '安全设置',
     securityDescription: '密码、双因素认证和通知提醒集中放在右侧。',
-    administrator: '管理员',
+    administrator: '超级管理员',
     user: '用户',
     username: '用户名',
     email: '邮箱',
@@ -1833,7 +1833,7 @@ export default {
       searchApiKeyGroups: '搜索 API Key 分组...',
       statusFilter: '状态筛选',
       allStatuses: '全部状态',
-      admin: '管理员',
+      admin: '超级管理员',
       user: '用户',
       disabled: '禁用',
       email: '邮箱',
@@ -1914,7 +1914,7 @@ export default {
       failedToLoadApiKeys: '加载用户 API 密钥失败',
       deleteConfirm: "确定要删除用户 '{email}' 吗？此操作无法撤销。",
       roles: {
-        admin: '管理员',
+        admin: '超级管理员',
         user: '用户'
       },
       form: {
