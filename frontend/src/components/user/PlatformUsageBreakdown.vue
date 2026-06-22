@@ -56,7 +56,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const VISIBLE_PLATFORMS = new Set(['deepseek'])
+const VISIBLE_PLATFORMS = new Set(['deepseek', 'minimax'])
 
 interface BreakdownRow {
   platform: string
@@ -82,7 +82,8 @@ const PLATFORM_LABELS: Record<string, string> = {
   openai: 'OpenAI',
   gemini: 'Gemini',
   antigravity: 'Antigravity',
-  deepseek: 'DeepSeek'
+  deepseek: 'DeepSeek',
+  minimax: 'MiniMax'
 }
 
 function platformLabel(platform: string): string {

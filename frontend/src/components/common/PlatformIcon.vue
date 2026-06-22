@@ -23,6 +23,10 @@
   <svg v-else-if="platform === 'deepseek'" :class="sizeClass" viewBox="0 0 24 24" fill="currentColor">
     <path d="M4 12.5C4 7.8 7.8 4 12.5 4H20v7.5C20 16.2 16.2 20 11.5 20H4v-7.5Zm3 0V17h4.5a5.5 5.5 0 0 0 5.5-5.5V7h-4.5A5.5 5.5 0 0 0 7 12.5Zm2.25.2c2.4-2.6 4.95-2.6 7.5 0l-1.5 1.35c-1.75-1.55-3.02-1.55-4.5 0L9.25 12.7Z" />
   </svg>
+  <!-- MiniMax logo (compact M mark) -->
+  <svg v-else-if="platform === 'minimax'" :class="sizeClass" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M4 5h3.2l4.8 8.2L16.8 5H20v14h-3V10.7l-3.7 6.2h-2.6L7 10.7V19H4V5z" />
+  </svg>
   <!-- Fallback: generic platform icon -->
   <svg v-else :class="sizeClass" fill="currentColor" viewBox="0 0 24 24">
     <path

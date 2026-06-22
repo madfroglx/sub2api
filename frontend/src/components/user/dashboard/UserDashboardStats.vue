@@ -252,9 +252,10 @@ const PLATFORM_LABELS: Record<string, string> = {
   openai: 'OpenAI',
   gemini: 'Gemini',
   antigravity: 'Antigravity',
-  deepseek: 'DeepSeek'
+  deepseek: 'DeepSeek',
+  minimax: 'MiniMax'
 }
-const PLATFORM_ORDER = ['deepseek']
+const PLATFORM_ORDER = ['deepseek', 'minimax']
 
 const platformLabel = (p: string) => PLATFORM_LABELS[p] ?? p
 

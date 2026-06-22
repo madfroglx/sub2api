@@ -128,7 +128,7 @@ const emit = defineEmits(['close', 'success'])
 const { t } = useI18n()
 const appStore = useAppStore()
 
-const PLATFORMS: PlatformQuotaPlatform[] = ['deepseek']
+const PLATFORMS: PlatformQuotaPlatform[] = ['deepseek', 'minimax']
 
 interface QuotaRow {
   platform: PlatformQuotaPlatform

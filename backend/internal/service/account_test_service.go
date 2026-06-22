@@ -502,6 +502,8 @@ func (s *AccountTestService) testOpenAIAccountConnection(c *gin.Context, account
 		testModelID = openai.DefaultTestModel
 		if account.IsDeepSeek() {
 			testModelID = DefaultDeepSeekModel
+		} else if account.IsMiniMax() {
+			testModelID = DefaultMiniMaxModel
 		}
 	}
 
@@ -557,7 +559,7 @@ func (s *AccountTestService) testOpenAIAccountConnection(c *gin.Context, account
 		if err != nil {
 			return s.sendErrorAndEnd(c, fmt.Sprintf("Invalid base URL: %s", err.Error()))
 		}
-		if account.IsDeepSeek() || !openai_compat.ShouldUseResponsesAPI(account.Extra) {
+		if account.IsDeepSeek() || account.IsMiniMax() || !openai_compat.ShouldUseResponsesAPI(account.Extra) {
 			return s.testOpenAIChatCompletionsConnection(c, account, testModelID, prompt, normalizedBaseURL, authToken)
 		}
 		apiURL = buildOpenAIResponsesURL(normalizedBaseURL)

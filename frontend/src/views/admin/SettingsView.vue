@@ -7011,7 +7011,7 @@ type SettingsForm = Omit<
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
 
-const visiblePlatformQuotaPlatforms = ["deepseek"] as const;
+const visiblePlatformQuotaPlatforms = ["deepseek", "minimax"] as const;
 
 const form = reactive<SettingsForm>({
   registration_enabled: true,

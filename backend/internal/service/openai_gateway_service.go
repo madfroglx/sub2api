@@ -1588,7 +1588,7 @@ func withOpenAICompatibleAccountPlatform(ctx context.Context, platform string) c
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	if platform != PlatformDeepSeek {
+	if platform != PlatformDeepSeek && platform != PlatformMiniMax {
 		platform = PlatformOpenAI
 	}
 	return context.WithValue(ctx, openAICompatibleAccountPlatformCtxKey{}, platform)
@@ -1601,6 +1601,9 @@ func openAICompatibleAccountPlatformFromContext(ctx context.Context) string {
 	platform, _ := ctx.Value(openAICompatibleAccountPlatformCtxKey{}).(string)
 	if platform == PlatformDeepSeek {
 		return PlatformDeepSeek
+	}
+	if platform == PlatformMiniMax {
+		return PlatformMiniMax
 	}
 	return PlatformOpenAI
 }

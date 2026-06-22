@@ -108,7 +108,8 @@ const groups = ref<Array<{ id: number; name: string; platform: string }>>([])
 
 const platformOptions = computed(() => [
   { value: '', label: t('common.all') },
-  { value: 'deepseek', label: 'DeepSeek' }
+  { value: 'deepseek', label: 'DeepSeek' },
+  { value: 'minimax', label: 'MiniMax' }
 ])
 
 const timeRangeOptions = computed(() => [

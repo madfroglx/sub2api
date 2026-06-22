@@ -2,6 +2,8 @@
 
 ## Local Development
 
+### macOS / Linux / Git Bash
+
 Use the helper script through Makefile:
 
 ```bash
@@ -22,6 +24,79 @@ Backend Go changes need:
 
 ```bash
 make dev-restart
+```
+
+Equivalent direct script commands:
+
+```bash
+./scripts/dev.sh start
+./scripts/dev.sh restart backend
+./scripts/dev.sh stop
+./scripts/dev.sh status
+./scripts/dev.sh logs
+```
+
+### Windows PowerShell
+
+If `make` is available, the same Makefile commands above can be used. If `make` is not available, prefer running the services with PowerShell-compatible commands.
+
+Start backend from source:
+
+```powershell
+$env:DATA_DIR = "$PWD\.dev\backend-data"
+$env:SERVER_HOST = "127.0.0.1"
+$env:SERVER_PORT = "8080"
+$env:SERVER_MODE = "debug"
+& "$PWD\.dev\tools\go\bin\go.exe" run ./cmd/server
+```
+
+Start frontend:
+
+```powershell
+$env:VITE_DEV_PROXY_TARGET = "http://127.0.0.1:8080"
+$env:VITE_DEV_PORT = "3000"
+npm exec --yes --package pnpm@9.15.9 -- pnpm --dir frontend run dev -- --host 0.0.0.0 --port 3000
+```
+
+Restart backend when Go code changes:
+
+```powershell
+$pidFile = ".dev\pids\backend.pid"
+if (Test-Path $pidFile) {
+  $oldPid = [int](Get-Content $pidFile | Select-Object -First 1)
+  Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue
+}
+
+$backendLog = "$PWD\.dev\logs\backend.log"
+$backendData = "$PWD\.dev\backend-data"
+$go = "$PWD\.dev\tools\go\bin\go.exe"
+$cmd = @"
+`$env:DATA_DIR='$backendData'
+`$env:SERVER_HOST='127.0.0.1'
+`$env:SERVER_PORT='8080'
+`$env:SERVER_MODE='debug'
+& '$go' run ./cmd/server *> '$backendLog'
+"@
+$p = Start-Process -FilePath pwsh -ArgumentList @("-NoProfile","-ExecutionPolicy","Bypass","-Command",$cmd) -WorkingDirectory "$PWD\backend" -WindowStyle Hidden -PassThru
+Set-Content -Path $pidFile -Value $p.Id
+```
+
+Stop backend:
+
+```powershell
+$pidFile = ".dev\pids\backend.pid"
+if (Test-Path $pidFile) {
+  $oldPid = [int](Get-Content $pidFile | Select-Object -First 1)
+  Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue
+  Remove-Item $pidFile -Force
+}
+```
+
+Check backend:
+
+```powershell
+Get-Content .dev\logs\backend.log -Tail 120
+netstat -ano | Select-String ":8080"
 ```
 
 Local runtime state is under `.dev/`.

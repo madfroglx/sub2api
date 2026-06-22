@@ -1030,6 +1030,11 @@ func (h *GatewayHandler) Models(c *gin.Context) {
 		return
 	}
 
+	if platform == service.PlatformMiniMax {
+		writeModelsList(c, []string{service.DefaultMiniMaxModel})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"object": "list",
 		"data":   claude.DefaultModels,
@@ -1157,6 +1162,8 @@ func defaultModelIDsForPlatform(platform string) []string {
 		return ids
 	case service.PlatformDeepSeek:
 		return []string{service.DefaultDeepSeekModel}
+	case service.PlatformMiniMax:
+		return []string{service.DefaultMiniMaxModel}
 	default:
 		ids := make([]string, 0, len(claude.DefaultModels))
 		for _, model := range claude.DefaultModels {

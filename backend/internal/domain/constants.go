@@ -24,11 +24,14 @@ const (
 	PlatformGemini      = "gemini"
 	PlatformAntigravity = "antigravity"
 	PlatformDeepSeek    = "deepseek"
+	PlatformMiniMax     = "minimax"
 )
 
 const (
 	DefaultDeepSeekBaseURL = "https://api.deepseek.com"
 	DefaultDeepSeekModel   = "DeepSeek-V3.2"
+	DefaultMiniMaxBaseURL  = "http://218.205.65.71:32699"
+	DefaultMiniMaxModel    = "MiniMax/MiniMax-M2.7"
 )
 
 // Account type constants

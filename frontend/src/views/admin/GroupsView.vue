@@ -3135,11 +3135,13 @@ const exclusiveOptions = computed(() => [
 
 const platformOptions = computed(() => [
   { value: "deepseek", label: "DeepSeek" },
+  { value: "minimax", label: "MiniMax" },
 ]);
 
 const platformFilterOptions = computed(() => [
   { value: "", label: t("admin.groups.allPlatforms") },
   { value: "deepseek", label: "DeepSeek" },
+  { value: "minimax", label: "MiniMax" },
 ]);
 
 const editStatusOptions = computed(() => [

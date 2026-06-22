@@ -172,6 +172,7 @@ const doubaoModels = [
 
 // MiniMax
 const minimaxModels = [
+  'MiniMax/MiniMax-M2.7',
   'abab6.5-chat', 'abab6.5s-chat', 'abab6.5s-chat-pro',
   'abab6-chat',
   'abab5.5-chat', 'abab5.5s-chat'
@@ -276,6 +277,10 @@ const geminiPresetMappings = [
 
 const deepseekPresetMappings = [
   { label: 'V3.2', from: 'DeepSeek-V3.2', to: 'DeepSeek-V3.2', color: 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400' }
+]
+
+const minimaxPresetMappings = [
+  { label: 'M2.7', from: 'MiniMax/MiniMax-M2.7', to: 'MiniMax/MiniMax-M2.7', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-400' }
 ]
 
 // Antigravity 预设映射（支持通配符）
@@ -395,6 +400,7 @@ export function getPresetMappingsByPlatform(platform: string) {
   if (platform === 'openai') return openaiPresetMappings
   if (platform === 'gemini') return geminiPresetMappings
   if (platform === 'deepseek') return deepseekPresetMappings
+  if (platform === 'minimax') return minimaxPresetMappings
   if (platform === 'antigravity') return antigravityPresetMappings
   if (platform === 'bedrock') return bedrockPresetMappings
   return anthropicPresetMappings

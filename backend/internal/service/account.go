@@ -1056,8 +1056,12 @@ func (a *Account) IsDeepSeek() bool {
 	return a.Platform == PlatformDeepSeek
 }
 
+func (a *Account) IsMiniMax() bool {
+	return a.Platform == PlatformMiniMax
+}
+
 func (a *Account) IsOpenAIChatCompletionsCompatible() bool {
-	return a.IsOpenAI() || a.IsDeepSeek()
+	return a.IsOpenAI() || a.IsDeepSeek() || a.IsMiniMax()
 }
 
 func (a *Account) IsAnthropic() bool {
@@ -1084,6 +1088,9 @@ func (a *Account) GetOpenAIBaseURL() string {
 	}
 	if a.IsDeepSeek() {
 		return DefaultDeepSeekBaseURL
+	}
+	if a.IsMiniMax() {
+		return DefaultMiniMaxBaseURL
 	}
 	return "https://api.openai.com"
 }

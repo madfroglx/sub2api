@@ -72,7 +72,7 @@ func RegisterGatewayRoutes(
 				h.OpenAIGateway.Responses(c)
 				return
 			}
-			if platform == service.PlatformDeepSeek {
+			if platform == service.PlatformDeepSeek || platform == service.PlatformMiniMax {
 				writeUnsupportedGatewayAPI(c, "Responses API is not supported for this platform")
 				return
 			}
@@ -84,14 +84,14 @@ func RegisterGatewayRoutes(
 				h.OpenAIGateway.Responses(c)
 				return
 			}
-			if platform == service.PlatformDeepSeek {
+			if platform == service.PlatformDeepSeek || platform == service.PlatformMiniMax {
 				writeUnsupportedGatewayAPI(c, "Responses API is not supported for this platform")
 				return
 			}
 			h.Gateway.Responses(c)
 		})
 		gateway.GET("/responses", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformDeepSeek {
+			if isChatCompletionsOnlyOpenAICompatiblePlatform(getGroupPlatform(c)) {
 				writeUnsupportedGatewayAPI(c, "Responses API is not supported for this platform")
 				return
 			}
@@ -168,7 +168,7 @@ func RegisterGatewayRoutes(
 			h.OpenAIGateway.Responses(c)
 			return
 		}
-		if platform == service.PlatformDeepSeek {
+		if platform == service.PlatformDeepSeek || platform == service.PlatformMiniMax {
 			writeUnsupportedGatewayAPI(c, "Responses API is not supported for this platform")
 			return
 		}
@@ -177,7 +177,7 @@ func RegisterGatewayRoutes(
 	r.POST("/responses", bodyLimit, clientRequestID, opsErrorLogger, endpointNorm, gin.HandlerFunc(apiKeyAuth), requireGroupAnthropic, responsesHandler)
 	r.POST("/responses/*subpath", bodyLimit, clientRequestID, opsErrorLogger, endpointNorm, gin.HandlerFunc(apiKeyAuth), requireGroupAnthropic, responsesHandler)
 	r.GET("/responses", bodyLimit, clientRequestID, opsErrorLogger, endpointNorm, gin.HandlerFunc(apiKeyAuth), requireGroupAnthropic, func(c *gin.Context) {
-		if getGroupPlatform(c) == service.PlatformDeepSeek {
+		if isChatCompletionsOnlyOpenAICompatiblePlatform(getGroupPlatform(c)) {
 			writeUnsupportedGatewayAPI(c, "Responses API is not supported for this platform")
 			return
 		}
@@ -189,7 +189,7 @@ func RegisterGatewayRoutes(
 		codexDirect.POST("/responses", responsesHandler)
 		codexDirect.POST("/responses/*subpath", responsesHandler)
 		codexDirect.GET("/responses", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformDeepSeek {
+			if isChatCompletionsOnlyOpenAICompatiblePlatform(getGroupPlatform(c)) {
 				writeUnsupportedGatewayAPI(c, "Responses API is not supported for this platform")
 				return
 			}
@@ -289,7 +289,11 @@ func getGroupPlatform(c *gin.Context) string {
 }
 
 func isOpenAICompatibleChatPlatform(platform string) bool {
-	return platform == service.PlatformOpenAI || platform == service.PlatformDeepSeek
+	return platform == service.PlatformOpenAI || platform == service.PlatformDeepSeek || platform == service.PlatformMiniMax
+}
+
+func isChatCompletionsOnlyOpenAICompatiblePlatform(platform string) bool {
+	return platform == service.PlatformDeepSeek || platform == service.PlatformMiniMax
 }
 
 func writeUnsupportedGatewayAPI(c *gin.Context, message string) {

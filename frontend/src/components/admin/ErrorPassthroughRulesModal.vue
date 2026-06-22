@@ -486,7 +486,8 @@ const matchModeOptions = computed(() => [
 ])
 
 const platformOptions = [
-  { value: 'deepseek', label: 'DeepSeek' }
+  { value: 'deepseek', label: 'DeepSeek' },
+  { value: 'minimax', label: 'MiniMax' }
 ]
 
 // Load rules when dialog opens

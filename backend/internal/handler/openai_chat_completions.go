@@ -131,6 +131,8 @@ func (h *OpenAIGatewayHandler) ChatCompletions(c *gin.Context) {
 	accountPlatform := service.PlatformOpenAI
 	if apiKey.Group != nil && apiKey.Group.Platform == service.PlatformDeepSeek {
 		accountPlatform = service.PlatformDeepSeek
+	} else if apiKey.Group != nil && apiKey.Group.Platform == service.PlatformMiniMax {
+		accountPlatform = service.PlatformMiniMax
 	}
 
 	for {

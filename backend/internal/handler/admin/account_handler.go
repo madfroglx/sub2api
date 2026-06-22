@@ -133,8 +133,8 @@ type UpdateAccountRequest struct {
 }
 
 func validateDeepSeekAccountType(platform, accountType string) error {
-	if platform == service.PlatformDeepSeek && strings.TrimSpace(accountType) != service.AccountTypeAPIKey {
-		return fmt.Errorf("DeepSeek accounts only support API Key type")
+	if (platform == service.PlatformDeepSeek || platform == service.PlatformMiniMax) && strings.TrimSpace(accountType) != service.AccountTypeAPIKey {
+		return fmt.Errorf("%s accounts only support API Key type", platform)
 	}
 	return nil
 }

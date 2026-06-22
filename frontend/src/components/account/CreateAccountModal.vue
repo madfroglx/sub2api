@@ -171,6 +171,20 @@
             <Icon name="bolt" size="sm" />
             DeepSeek
           </button>
+          <button
+            v-if="isCreateAccountPlatformVisible('minimax')"
+            type="button"
+            @click="form.platform = 'minimax'"
+            :class="[
+              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              form.platform === 'minimax'
+                ? 'bg-white text-rose-600 shadow-sm dark:bg-dark-600 dark:text-rose-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <Icon name="sparkles" size="sm" />
+            MiniMax
+          </button>
         </div>
       </div>
 
@@ -1047,7 +1061,9 @@
                   ? 'https://generativelanguage.googleapis.com'
                   : form.platform === 'deepseek'
                     ? 'https://api.deepseek.com'
-                    : 'https://api.anthropic.com'
+                    : form.platform === 'minimax'
+                      ? 'http://218.205.65.71:32699'
+                      : 'https://api.anthropic.com'
             "
           />
           <p class="input-hint">{{ baseUrlHint }}</p>
@@ -1066,7 +1082,9 @@
                   ? 'AIza...'
                   : form.platform === 'deepseek'
                     ? 'sk-...'
-                    : 'sk-ant-...'
+                    : form.platform === 'minimax'
+                      ? 'hc-n...'
+                      : 'sk-ant-...'
             "
           />
           <p class="input-hint">{{ apiKeyHint }}</p>
@@ -3308,6 +3326,7 @@ const baseUrlHint = computed(() => {
   if (form.platform === 'openai') return t('admin.accounts.openai.baseUrlHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.baseUrlHint')
   if (form.platform === 'deepseek') return 'DeepSeek API Base URL'
+  if (form.platform === 'minimax') return 'MiniMax API Base URL'
   return t('admin.accounts.baseUrlHint')
 })
 
@@ -3315,6 +3334,7 @@ const apiKeyHint = computed(() => {
   if (form.platform === 'openai') return t('admin.accounts.openai.apiKeyHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.apiKeyHint')
   if (form.platform === 'deepseek') return 'DeepSeek API Key'
+  if (form.platform === 'minimax') return 'MiniMax API Key'
   return t('admin.accounts.apiKeyHint')
 })
 
@@ -3386,7 +3406,7 @@ interface TempUnschedRuleForm {
 // State
 const step = ref(1)
 const submitting = ref(false)
-const createAccountVisiblePlatforms: AccountPlatform[] = ['deepseek']
+const createAccountVisiblePlatforms: AccountPlatform[] = ['deepseek', 'minimax']
 const isCreateAccountPlatformVisible = (platform: AccountPlatform) => createAccountVisiblePlatforms.includes(platform)
 const platformGridClass = computed(() => {
   const count = createAccountVisiblePlatforms.length
@@ -3839,7 +3859,9 @@ watch(
           ? 'https://generativelanguage.googleapis.com'
           : newPlatform === 'deepseek'
             ? 'https://api.deepseek.com'
-            : 'https://api.anthropic.com'
+            : newPlatform === 'minimax'
+              ? 'http://218.205.65.71:32699'
+              : 'https://api.anthropic.com'
     // Clear model-related settings
     allowedModels.value = []
     modelMappings.value = []
@@ -3864,9 +3886,10 @@ watch(
     if (newPlatform !== 'anthropic' && accountCategory.value === 'bedrock') {
       accountCategory.value = 'oauth-based'
     }
-    if (newPlatform === 'deepseek') {
+    if (newPlatform === 'deepseek' || newPlatform === 'minimax') {
       accountCategory.value = 'apikey'
       openAIEndpointCapabilities.value = ['chat_completions']
+      allowedModels.value = [...getModelsByPlatform(newPlatform)]
     }
     // Reset Bedrock fields when switching platforms
     bedrockAccessKeyId.value = ''
@@ -4664,7 +4687,9 @@ const handleSubmit = async () => {
         ? 'https://generativelanguage.googleapis.com'
         : form.platform === 'deepseek'
           ? 'https://api.deepseek.com'
-          : 'https://api.anthropic.com'
+          : form.platform === 'minimax'
+            ? 'http://218.205.65.71:32699'
+            : 'https://api.anthropic.com'
 
   // Build credentials with optional model mapping
   const credentials: Record<string, unknown> = {
