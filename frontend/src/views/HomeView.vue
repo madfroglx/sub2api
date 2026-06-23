@@ -76,7 +76,7 @@
             {{ siteSubtitle || 'TokenQS AI Gateway' }}
           </p>
           <h1 class="mx-auto max-w-5xl text-balance text-4xl font-semibold leading-tight text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
-            一站式大模型服务统一入口
+            一站式大模型服务
           </h1>
           <p class="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-gray-300 sm:text-lg">
             源头安全可控，价格更具优势，稳定可靠。统一接入 DeepSeek、GLM、Qwen、Gemini 等模型，按量计费，开箱即用。

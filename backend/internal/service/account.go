@@ -1158,7 +1158,7 @@ func (a *Account) SupportsOpenAIEndpointCapability(capability OpenAIEndpointCapa
 	if capability == "" {
 		return true
 	}
-	if a.IsDeepSeek() {
+	if a.IsDeepSeek() || a.IsMiniMax() {
 		return a.Type == AccountTypeAPIKey && capability == OpenAIEndpointCapabilityChatCompletions
 	}
 	if !a.IsOpenAI() {

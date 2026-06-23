@@ -463,6 +463,16 @@ func TestAccountSupportsOpenAIEndpointCapability(t *testing.T) {
 		require.False(t, account.SupportsOpenAIEndpointCapability(OpenAIEndpointCapabilityEmbeddings))
 	})
 
+	t.Run("MiniMax APIKey 默认仅兼容 chat", func(t *testing.T) {
+		account := &Account{
+			Platform: PlatformMiniMax,
+			Type:     AccountTypeAPIKey,
+		}
+
+		require.True(t, account.SupportsOpenAIEndpointCapability(OpenAIEndpointCapabilityChatCompletions))
+		require.False(t, account.SupportsOpenAIEndpointCapability(OpenAIEndpointCapabilityEmbeddings))
+	})
+
 	t.Run("显式列表支持同时声明 chat 和 embeddings", func(t *testing.T) {
 		account := &Account{
 			Platform: PlatformOpenAI,
