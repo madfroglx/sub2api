@@ -2310,9 +2310,9 @@
         </div>
       </div>
 
-      <!-- Group Selection - 仅标准模式显示 -->
+      <!-- Group Selection - 标准模式或管理员显示 -->
       <GroupSelector
-        v-if="!authStore.isSimpleMode"
+        v-if="!authStore.isSimpleMode || authStore.isAdmin"
         v-model="form.group_ids"
         :groups="groups"
         :platform="account?.platform"
@@ -2384,6 +2384,7 @@ import type {
   Account,
   Proxy,
   AdminGroup,
+  AccountPlatform,
   CheckMixedChannelResponse,
   OpenAICompactMode,
   OpenAIResponsesMode,
@@ -2839,11 +2840,21 @@ const tempUnschedPresets = computed(() => [
 ])
 
 // Computed: default base URL based on platform
-const defaultBaseUrl = computed(() => {
-  if (props.account?.platform === 'openai') return 'https://api.openai.com'
-  if (props.account?.platform === 'gemini') return 'https://generativelanguage.googleapis.com'
-  return 'https://api.anthropic.com'
-})
+const defaultBaseUrls: Partial<Record<AccountPlatform, string>> = {
+  anthropic: 'https://api.anthropic.com',
+  openai: 'https://api.openai.com',
+  gemini: 'https://generativelanguage.googleapis.com',
+  deepseek: 'https://api.deepseek.com',
+  minimax: 'http://218.205.65.71:32699',
+  zhipu: 'https://open.bigmodel.cn/api/paas/v4',
+  seedance: 'https://ark.cn-beijing.volces.com/api/v3'
+}
+
+const resolveDefaultBaseUrl = (platform?: AccountPlatform | string) => {
+  return (platform && defaultBaseUrls[platform as AccountPlatform]) || 'https://api.anthropic.com'
+}
+
+const defaultBaseUrl = computed(() => resolveDefaultBaseUrl(props.account?.platform))
 
 const mixedChannelWarningMessageText = computed(() => {
   if (mixedChannelWarningDetails.value) {
@@ -3092,12 +3103,7 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   // Initialize API Key fields for apikey type
   if (newAccount.type === 'apikey' && newAccount.credentials) {
     const credentials = newAccount.credentials as Record<string, unknown>
-    const platformDefaultUrl =
-      newAccount.platform === 'openai'
-        ? 'https://api.openai.com'
-        : newAccount.platform === 'gemini'
-          ? 'https://generativelanguage.googleapis.com'
-          : 'https://api.anthropic.com'
+    const platformDefaultUrl = resolveDefaultBaseUrl(newAccount.platform)
     editBaseUrl.value = (credentials.base_url as string) || platformDefaultUrl
 
     // Load model mappings and detect mode

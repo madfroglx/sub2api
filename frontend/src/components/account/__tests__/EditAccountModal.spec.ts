@@ -15,9 +15,14 @@ vi.mock('@/stores/app', () => ({
   })
 }))
 
+const authStoreMock = {
+  isSimpleMode: true,
+  isAdmin: true
+}
+
 vi.mock('@/stores/auth', () => ({
   useAuthStore: () => ({
-    isSimpleMode: true
+    ...authStoreMock
   })
 }))
 
@@ -214,6 +219,12 @@ describe('EditAccountModal', () => {
     expect(updateAccountMock.mock.calls[0]?.[1]?.credentials?.model_mapping).toEqual({
       'gpt-5.2': 'gpt-5.2'
     })
+  })
+
+  it('shows group selection for admins even in simple mode', async () => {
+    const wrapper = mountModal(buildAccount())
+
+    expect(wrapper.find('[data-tour="account-form-groups"]').exists()).toBe(true)
   })
 
   it('preserves model mappings when editing the whitelist', async () => {

@@ -170,7 +170,12 @@ const doubaoModels = [
   'doubao-1.5-pro-vision-32k', 'doubao-1.5-thinking-pro'
 ]
 
-// MiniMax
+// Seedance
+const seedanceModels = [
+  'doubao-seedance-1-0-pro-250528', 'doubao-seedance-1-0-lite-t2v-250428',
+  'doubao-seedance-1-0-lite-i2v-250428'
+]
+
 const minimaxModels = [
   'MiniMax/MiniMax-M2.7',
   'abab6.5-chat', 'abab6.5s-chat', 'abab6.5s-chat-pro',
@@ -216,6 +221,7 @@ const allModelsList: string[] = [
   ...zhipuModels,
   ...qwenModels,
   ...deepseekModels,
+  ...seedanceModels,
   ...mistralModels,
   ...metaModels,
   ...xaiModels,
@@ -237,7 +243,33 @@ export const allModels = allModelsList.map(m => ({ value: m, label: m }))
 // 预设映射
 // =====================
 
-const anthropicPresetMappings = [
+export interface PresetModelMapping {
+  label: string
+  from: string
+  to: string
+  color: string
+}
+
+const DEFAULT_PRESET_COLOR = 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-dark-500'
+
+type RawPresetModelMapping = PresetModelMapping | {
+  from: string
+  to: string
+  description: string
+}
+
+function normalizePresetMapping(preset: RawPresetModelMapping): PresetModelMapping {
+  if ('label' in preset && 'color' in preset) return preset
+
+  return {
+    label: preset.description,
+    from: preset.from,
+    to: preset.to,
+    color: DEFAULT_PRESET_COLOR
+  }
+}
+
+const anthropicPresetMappings: PresetModelMapping[] = [
   { label: 'Fable 5', from: 'claude-fable-5', to: 'claude-fable-5', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-400' },
   { label: 'Sonnet 4', from: 'claude-sonnet-4-20250514', to: 'claude-sonnet-4-20250514', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400' },
   { label: 'Sonnet 4.5', from: 'claude-sonnet-4-5-20250929', to: 'claude-sonnet-4-5-20250929', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400' },
@@ -251,7 +283,7 @@ const anthropicPresetMappings = [
   { label: 'Opus->Sonnet', from: 'claude-opus-4-6', to: 'claude-sonnet-4-5-20250929', color: 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400' }
 ]
 
-const openaiPresetMappings = [
+const openaiPresetMappings: PresetModelMapping[] = [
   { label: 'GPT-4o', from: 'gpt-4o', to: 'gpt-4o', color: 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400' },
   { label: 'GPT-4o Mini', from: 'gpt-4o-mini', to: 'gpt-4o-mini', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400' },
   { label: 'GPT-4.1', from: 'gpt-4.1', to: 'gpt-4.1', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400' },
@@ -266,7 +298,7 @@ const openaiPresetMappings = [
   { label: 'Sonnet→5.4', from: 'claude-sonnet-4-6', to: 'gpt-5.4', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400' }
 ]
 
-const geminiPresetMappings = [
+const geminiPresetMappings: PresetModelMapping[] = [
   { label: 'Flash 2.0', from: 'gemini-2.0-flash', to: 'gemini-2.0-flash', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400' },
   { label: '2.5 Flash', from: 'gemini-2.5-flash', to: 'gemini-2.5-flash', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400' },
   { label: '2.5 Image', from: 'gemini-2.5-flash-image', to: 'gemini-2.5-flash-image', color: 'bg-sky-100 text-sky-700 hover:bg-sky-200 dark:bg-sky-900/30 dark:text-sky-400' },
@@ -275,16 +307,28 @@ const geminiPresetMappings = [
   { label: '3.1 Image', from: 'gemini-3.1-flash-image', to: 'gemini-3.1-flash-image', color: 'bg-sky-100 text-sky-700 hover:bg-sky-200 dark:bg-sky-900/30 dark:text-sky-400' }
 ]
 
-const deepseekPresetMappings = [
+const deepseekPresetMappings: PresetModelMapping[] = [
   { label: 'V3.2', from: 'DeepSeek-V3.2', to: 'DeepSeek-V3.2', color: 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400' }
 ]
 
-const minimaxPresetMappings = [
+const zhipuPresetMappings: RawPresetModelMapping[] = [
+  { from: 'glm-4.5', to: 'glm-4.5', description: '智谱 GLM-4.5' },
+  { from: 'glm-4.5-air', to: 'glm-4.5-air', description: '智谱 GLM-4.5 Air' },
+  { from: 'glm-4.5-flash', to: 'glm-4.5-flash', description: '智谱 GLM-4.5 Flash' }
+]
+
+const seedancePresetMappings: RawPresetModelMapping[] = [
+  { from: 'doubao-seedance-1-0-pro-250528', to: 'doubao-seedance-1-0-pro-250528', description: 'Seedance 1.0 Pro' },
+  { from: 'doubao-seedance-1-0-lite-t2v-250428', to: 'doubao-seedance-1-0-lite-t2v-250428', description: 'Seedance 1.0 Lite T2V' },
+  { from: 'doubao-seedance-1-0-lite-i2v-250428', to: 'doubao-seedance-1-0-lite-i2v-250428', description: 'Seedance 1.0 Lite I2V' }
+]
+
+const minimaxPresetMappings: PresetModelMapping[] = [
   { label: 'M2.7', from: 'MiniMax/MiniMax-M2.7', to: 'MiniMax/MiniMax-M2.7', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-400' }
 ]
 
 // Antigravity 预设映射（支持通配符）
-const antigravityPresetMappings = [
+const antigravityPresetMappings: PresetModelMapping[] = [
   // Claude 通配符映射
   { label: 'Claude→Sonnet', from: 'claude-*', to: 'claude-sonnet-4-5', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400' },
   { label: 'Fable 5', from: 'claude-fable-5', to: 'claude-fable-5', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-400' },
@@ -319,7 +363,7 @@ const antigravityPresetMappings = [
 ]
 
 // Bedrock 预设映射（与后端 DefaultBedrockModelMapping 保持一致）
-const bedrockPresetMappings = [
+const bedrockPresetMappings: PresetModelMapping[] = [
   { label: 'Fable 5', from: 'claude-fable-5', to: 'anthropic.claude-fable-5', color: 'bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-400' },
   { label: 'Opus 4.6', from: 'claude-opus-4-6', to: 'us.anthropic.claude-opus-4-6-v1', color: 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-400' },
   { label: 'Opus 4.7', from: 'claude-opus-4-7', to: 'us.anthropic.claude-opus-4-7-v1', color: 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-400' },
@@ -379,6 +423,7 @@ export function getModelsByPlatform(platform: string): string[] {
     case 'zhipu': return zhipuModels
     case 'qwen': return qwenModels
     case 'deepseek': return deepseekModels
+    case 'seedance': return seedanceModels
     case 'mistral': return mistralModels
     case 'meta': return metaModels
     case 'xai': return xaiModels
@@ -396,14 +441,20 @@ export function getModelsByPlatform(platform: string): string[] {
 }
 
 // 按平台获取预设映射
-export function getPresetMappingsByPlatform(platform: string) {
-  if (platform === 'openai') return openaiPresetMappings
-  if (platform === 'gemini') return geminiPresetMappings
-  if (platform === 'deepseek') return deepseekPresetMappings
-  if (platform === 'minimax') return minimaxPresetMappings
-  if (platform === 'antigravity') return antigravityPresetMappings
-  if (platform === 'bedrock') return bedrockPresetMappings
-  return anthropicPresetMappings
+export function getPresetMappingsByPlatform(platform: string): PresetModelMapping[] {
+  let presets: RawPresetModelMapping[]
+
+  if (platform === 'openai') presets = openaiPresetMappings
+  else if (platform === 'gemini') presets = geminiPresetMappings
+  else if (platform === 'deepseek') presets = deepseekPresetMappings
+  else if (platform === 'zhipu') presets = zhipuPresetMappings
+  else if (platform === 'seedance') presets = seedancePresetMappings
+  else if (platform === 'minimax') presets = minimaxPresetMappings
+  else if (platform === 'antigravity') presets = antigravityPresetMappings
+  else if (platform === 'bedrock') presets = bedrockPresetMappings
+  else presets = anthropicPresetMappings
+
+  return presets.map(normalizePresetMapping)
 }
 
 // =====================

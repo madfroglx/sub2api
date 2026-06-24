@@ -3136,12 +3136,16 @@ const exclusiveOptions = computed(() => [
 const platformOptions = computed(() => [
   { value: "deepseek", label: "DeepSeek" },
   { value: "minimax", label: "MiniMax" },
+  { value: "zhipu", label: "智谱GLM" },
+  { value: "seedance", label: "Seedance" },
 ]);
 
 const platformFilterOptions = computed(() => [
   { value: "", label: t("admin.groups.allPlatforms") },
   { value: "deepseek", label: "DeepSeek" },
   { value: "minimax", label: "MiniMax" },
+  { value: "zhipu", label: "智谱GLM" },
+  { value: "seedance", label: "Seedance" },
 ]);
 
 const editStatusOptions = computed(() => [

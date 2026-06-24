@@ -172,6 +172,34 @@
             DeepSeek
           </button>
           <button
+            v-if="isCreateAccountPlatformVisible('zhipu')"
+            type="button"
+            @click="form.platform = 'zhipu'"
+            :class="[
+              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              form.platform === 'zhipu'
+                ? 'bg-white text-indigo-600 shadow-sm dark:bg-dark-600 dark:text-indigo-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <Icon name="brain" size="sm" />
+            智谱GLM
+          </button>
+          <button
+            v-if="isCreateAccountPlatformVisible('seedance')"
+            type="button"
+            @click="form.platform = 'seedance'"
+            :class="[
+              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              form.platform === 'seedance'
+                ? 'bg-white text-amber-600 shadow-sm dark:bg-dark-600 dark:text-amber-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <Icon name="sparkles" size="sm" />
+            Seedance
+          </button>
+          <button
             v-if="isCreateAccountPlatformVisible('minimax')"
             type="button"
             @click="form.platform = 'minimax'"
@@ -1054,17 +1082,7 @@
             v-model="apiKeyBaseUrl"
             type="text"
             class="input"
-            :placeholder="
-              form.platform === 'openai'
-                ? 'https://api.openai.com'
-                : form.platform === 'gemini'
-                  ? 'https://generativelanguage.googleapis.com'
-                  : form.platform === 'deepseek'
-                    ? 'https://api.deepseek.com'
-                    : form.platform === 'minimax'
-                      ? 'http://218.205.65.71:32699'
-                      : 'https://api.anthropic.com'
-            "
+            :placeholder="defaultApiKeyBaseUrls[form.platform] || 'https://api.anthropic.com'"
           />
           <p class="input-hint">{{ baseUrlHint }}</p>
         </div>
@@ -1075,17 +1093,7 @@
             type="password"
             required
             class="input font-mono"
-            :placeholder="
-              form.platform === 'openai'
-                ? 'sk-proj-...'
-                : form.platform === 'gemini'
-                  ? 'AIza...'
-                  : form.platform === 'deepseek'
-                    ? 'sk-...'
-                    : form.platform === 'minimax'
-                      ? 'hc-n...'
-                      : 'sk-ant-...'
-            "
+            :placeholder="apiKeyPlaceholder"
           />
           <p class="input-hint">{{ apiKeyHint }}</p>
         </div>
@@ -2884,9 +2892,9 @@
           </div>
         </div>
 
-        <!-- Group Selection - 仅标准模式显示 -->
+        <!-- Group Selection - 标准模式或管理员显示 -->
         <GroupSelector
-          v-if="!authStore.isSimpleMode"
+          v-if="!authStore.isSimpleMode || authStore.isAdmin"
           v-model="form.group_ids"
           :groups="groups"
           :platform="form.platform"
@@ -3406,7 +3414,7 @@ interface TempUnschedRuleForm {
 // State
 const step = ref(1)
 const submitting = ref(false)
-const createAccountVisiblePlatforms: AccountPlatform[] = ['deepseek', 'minimax']
+const createAccountVisiblePlatforms: AccountPlatform[] = ['deepseek', 'minimax', 'zhipu', 'seedance']
 const isCreateAccountPlatformVisible = (platform: AccountPlatform) => createAccountVisiblePlatforms.includes(platform)
 const platformGridClass = computed(() => {
   const count = createAccountVisiblePlatforms.length
@@ -3414,11 +3422,24 @@ const platformGridClass = computed(() => {
   if (count === 2) return 'grid-cols-2'
   if (count === 3) return 'grid-cols-2 sm:grid-cols-3'
   if (count === 4) return 'grid-cols-2 sm:grid-cols-4'
-  return 'grid-cols-2 sm:grid-cols-5'
+  return 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
 })
 const accountCategory = ref<'oauth-based' | 'apikey' | 'bedrock' | 'service_account'>('apikey') // UI selection for account category
 const addMethod = ref<AddMethod>('oauth') // For oauth-based: 'oauth' or 'setup-token'
-const apiKeyBaseUrl = ref('https://api.deepseek.com')
+const defaultApiKeyBaseUrls: Partial<Record<AccountPlatform, string>> = {
+  deepseek: 'https://api.deepseek.com',
+  minimax: 'http://218.205.65.71:32699',
+  zhipu: 'https://open.bigmodel.cn/api/paas/v4',
+  seedance: 'https://ark.cn-beijing.volces.com/api/v3'
+}
+const apiKeyBaseUrl = ref(defaultApiKeyBaseUrls.deepseek || '')
+const apiKeyPlaceholder = computed(() => {
+  if (form.platform === 'openai') return 'sk-proj-...'
+  if (form.platform === 'gemini') return 'AIza...'
+  if (form.platform === 'minimax') return 'hc-n...'
+  if (form.platform === 'anthropic') return 'sk-ant-...'
+  return 'sk-...'
+})
 const apiKeyValue = ref('')
 
 const syncPreviewCredentials = computed(() => {
@@ -3852,16 +3873,7 @@ watch(
   () => form.platform,
   (newPlatform) => {
     // Reset base URL based on platform
-    apiKeyBaseUrl.value =
-      (newPlatform === 'openai')
-        ? 'https://api.openai.com'
-        : newPlatform === 'gemini'
-          ? 'https://generativelanguage.googleapis.com'
-          : newPlatform === 'deepseek'
-            ? 'https://api.deepseek.com'
-            : newPlatform === 'minimax'
-              ? 'http://218.205.65.71:32699'
-              : 'https://api.anthropic.com'
+    apiKeyBaseUrl.value = defaultApiKeyBaseUrls[newPlatform] || 'https://api.anthropic.com'
     // Clear model-related settings
     allowedModels.value = []
     modelMappings.value = []
@@ -4279,7 +4291,7 @@ const resetForm = () => {
   form.expires_at = null
   accountCategory.value = 'apikey'
   addMethod.value = 'oauth'
-  apiKeyBaseUrl.value = 'https://api.deepseek.com'
+  apiKeyBaseUrl.value = defaultApiKeyBaseUrls.deepseek || ''
   apiKeyValue.value = ''
   editQuotaLimit.value = null
   editQuotaDailyLimit.value = null
@@ -4680,16 +4692,7 @@ const handleSubmit = async () => {
   }
 
   // Determine default base URL based on platform
-  const defaultBaseUrl =
-    form.platform === 'openai'
-      ? 'https://api.openai.com'
-      : form.platform === 'gemini'
-        ? 'https://generativelanguage.googleapis.com'
-        : form.platform === 'deepseek'
-          ? 'https://api.deepseek.com'
-          : form.platform === 'minimax'
-            ? 'http://218.205.65.71:32699'
-            : 'https://api.anthropic.com'
+  const defaultBaseUrl = defaultApiKeyBaseUrls[form.platform] || 'https://api.anthropic.com'
 
   // Build credentials with optional model mapping
   const credentials: Record<string, unknown> = {

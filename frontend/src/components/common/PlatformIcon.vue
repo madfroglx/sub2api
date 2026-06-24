@@ -27,6 +27,14 @@
   <svg v-else-if="platform === 'minimax'" :class="sizeClass" viewBox="0 0 24 24" fill="currentColor">
     <path d="M4 5h3.2l4.8 8.2L16.8 5H20v14h-3V10.7l-3.7 6.2h-2.6L7 10.7V19H4V5z" />
   </svg>
+
+  <svg v-else-if="platform === 'zhipu'" :class="sizeClass" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 3a7 7 0 0 0-7 7v1.2A5 5 0 0 0 9.8 19H11v-3H9.8A2 2 0 0 1 8 13v-3a4 4 0 1 1 8 0v3a2 2 0 0 1-1.8 3H13v3h1.2A5 5 0 0 0 19 11.2V10a7 7 0 0 0-7-7Zm-1.5 6.5a1.5 1.5 0 1 1 3 0v3a1.5 1.5 0 0 1-3 0v-3Z" />
+  </svg>
+
+  <svg v-else-if="platform === 'seedance'" :class="sizeClass" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5v-13Zm4 2v9l7-4.5-7-4.5Z" />
+  </svg>
   <!-- Fallback: generic platform icon -->
   <svg v-else :class="sizeClass" fill="currentColor" viewBox="0 0 24 24">
     <path

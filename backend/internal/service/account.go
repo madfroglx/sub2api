@@ -1060,8 +1060,16 @@ func (a *Account) IsMiniMax() bool {
 	return a.Platform == PlatformMiniMax
 }
 
+func (a *Account) IsZhipu() bool {
+	return a.Platform == PlatformZhipu
+}
+
+func (a *Account) IsSeedance() bool {
+	return a.Platform == PlatformSeedance
+}
+
 func (a *Account) IsOpenAIChatCompletionsCompatible() bool {
-	return a.IsOpenAI() || a.IsDeepSeek() || a.IsMiniMax()
+	return a.IsOpenAI() || a.IsDeepSeek() || a.IsMiniMax() || a.IsZhipu() || a.IsSeedance()
 }
 
 func (a *Account) IsAnthropic() bool {

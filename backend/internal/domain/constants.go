@@ -25,6 +25,8 @@ const (
 	PlatformAntigravity = "antigravity"
 	PlatformDeepSeek    = "deepseek"
 	PlatformMiniMax     = "minimax"
+	PlatformZhipu       = "zhipu"
+	PlatformSeedance    = "seedance"
 )
 
 const (
@@ -32,6 +34,10 @@ const (
 	DefaultDeepSeekModel   = "DeepSeek-V3.2"
 	DefaultMiniMaxBaseURL  = "http://218.205.65.71:32699"
 	DefaultMiniMaxModel    = "MiniMax/MiniMax-M2.7"
+	DefaultZhipuBaseURL    = "https://open.bigmodel.cn/api/paas/v4"
+	DefaultZhipuModel      = "glm-4.5"
+	DefaultSeedanceBaseURL = "https://ark.cn-beijing.volces.com/api/v3"
+	DefaultSeedanceModel   = "doubao-seedance-1-0-pro-250528"
 )
 
 // Account type constants

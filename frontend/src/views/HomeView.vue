@@ -79,7 +79,7 @@
             一站式大模型服务
           </h1>
           <p class="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-gray-300 sm:text-lg">
-            源头安全可控，价格更具优势，稳定可靠。统一接入 DeepSeek、GLM、Qwen、Gemini 等模型，按量计费，开箱即用。
+            源头安全可控，价格更具优势，稳定可靠。统一接入 DeepSeek、GLM、Qwen、Gemini、Seedance 等模型，按量计费，开箱即用。
           </p>
         </div>
 
@@ -396,6 +396,24 @@ const modelCatalog: ModelCard[] = [
     outputDiscount: '-40%',
     billing: '按量计费',
     accent: 'from-pink-500 to-rose-500'
+  },
+  {
+    name: 'seedance-1-0-pro',
+    provider: 'Seedance',
+    providerInitial: 'S',
+    category: 'Seedance',
+    tags: ['视频', '多模态'],
+    supplierType: '公有云',
+    supplier: '公有云',
+    officialInput: '¥10.00',
+    ourInput: '¥7.40',
+    inputDiscount: '-26%',
+    officialOutput: '¥25.00',
+    ourOutput: '¥18.50',
+    outputDiscount: '-26%',
+    billing: '按量计费',
+    hot: true,
+    accent: 'from-amber-500 to-orange-500'
   },
   {
     name: 'kling-v2.5-turbo',

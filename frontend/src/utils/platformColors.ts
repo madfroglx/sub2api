@@ -5,7 +5,7 @@
  * instead of defining their own color mappings.
  */
 
-export type Platform = 'anthropic' | 'openai' | 'antigravity' | 'gemini' | 'deepseek' | 'minimax'
+export type Platform = 'anthropic' | 'openai' | 'antigravity' | 'gemini' | 'deepseek' | 'minimax' | 'zhipu' | 'seedance'
 
 // ── Badge (bg + text + border, for inline badges with border) ───────
 const BADGE: Record<Platform, string> = {
@@ -15,6 +15,8 @@ const BADGE: Record<Platform, string> = {
   gemini: 'bg-blue-500/10 text-blue-600 border-blue-500/30 dark:text-blue-400',
   deepseek: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/30 dark:text-cyan-400',
   minimax: 'bg-rose-500/10 text-rose-600 border-rose-500/30 dark:text-rose-400',
+  zhipu: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/30 dark:text-indigo-400',
+  seedance: 'bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400',
 }
 const BADGE_DEFAULT = 'bg-slate-500/10 text-slate-600 border-slate-500/30 dark:text-slate-400'
 
@@ -26,6 +28,8 @@ const BADGE_LIGHT: Record<Platform, string> = {
   gemini: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300',
   deepseek: 'bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300',
   minimax: 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300',
+  zhipu: 'bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
+  seedance: 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300',
 }
 
 // ── Border ──────────────────────────────────────────────────────────
@@ -36,6 +40,8 @@ const BORDER: Record<Platform, string> = {
   gemini: 'border-blue-500/20 dark:border-blue-500/20',
   deepseek: 'border-cyan-500/20 dark:border-cyan-500/20',
   minimax: 'border-rose-500/20 dark:border-rose-500/20',
+  zhipu: 'border-indigo-500/20 dark:border-indigo-500/20',
+  seedance: 'border-amber-500/20 dark:border-amber-500/20',
 }
 const BORDER_DEFAULT = 'border-gray-200 dark:border-dark-700'
 
@@ -47,6 +53,8 @@ const ACCENT_BAR: Record<Platform, string> = {
   gemini: 'bg-gradient-to-r from-blue-400 to-blue-500',
   deepseek: 'bg-gradient-to-r from-cyan-400 to-cyan-500',
   minimax: 'bg-gradient-to-r from-rose-400 to-rose-500',
+  zhipu: 'bg-gradient-to-r from-indigo-400 to-indigo-500',
+  seedance: 'bg-gradient-to-r from-amber-400 to-amber-500',
 }
 const ACCENT_BAR_DEFAULT = 'bg-gradient-to-r from-primary-400 to-primary-500'
 
@@ -58,6 +66,8 @@ const TEXT: Record<Platform, string> = {
   gemini: 'text-blue-600 dark:text-blue-400',
   deepseek: 'text-cyan-600 dark:text-cyan-400',
   minimax: 'text-rose-600 dark:text-rose-400',
+  zhipu: 'text-indigo-600 dark:text-indigo-400',
+  seedance: 'text-amber-600 dark:text-amber-400',
 }
 const TEXT_DEFAULT = 'text-primary-600 dark:text-primary-400'
 
@@ -69,6 +79,8 @@ const ICON: Record<Platform, string> = {
   gemini: 'text-blue-500 dark:text-blue-400',
   deepseek: 'text-cyan-500 dark:text-cyan-400',
   minimax: 'text-rose-500 dark:text-rose-400',
+  zhipu: 'text-indigo-500 dark:text-indigo-400',
+  seedance: 'text-amber-500 dark:text-amber-400',
 }
 const ICON_DEFAULT = 'text-primary-500 dark:text-primary-400'
 
@@ -80,6 +92,8 @@ const BUTTON: Record<Platform, string> = {
   gemini: 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:bg-blue-500/80 dark:hover:bg-blue-500',
   deepseek: 'bg-cyan-600 text-white hover:bg-cyan-700 active:bg-cyan-800 dark:bg-cyan-600/80 dark:hover:bg-cyan-600',
   minimax: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 dark:bg-rose-600/80 dark:hover:bg-rose-600',
+  zhipu: 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 dark:bg-indigo-600/80 dark:hover:bg-indigo-600',
+  seedance: 'bg-amber-600 text-white hover:bg-amber-700 active:bg-amber-800 dark:bg-amber-600/80 dark:hover:bg-amber-600',
 }
 const BUTTON_DEFAULT = 'bg-primary-500 text-white hover:bg-primary-600 dark:bg-primary-600 dark:hover:bg-primary-500'
 
@@ -91,6 +105,8 @@ const DISCOUNT: Record<Platform, string> = {
   gemini: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
   deepseek: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300',
   minimax: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
+  zhipu: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+  seedance: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
 }
 const DISCOUNT_DEFAULT = 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
 
@@ -102,6 +118,8 @@ const GRADIENT: Record<Platform, string> = {
   gemini: 'from-blue-500 to-blue-600',
   deepseek: 'from-cyan-500 to-cyan-600',
   minimax: 'from-rose-500 to-rose-600',
+  zhipu: 'from-indigo-500 to-indigo-600',
+  seedance: 'from-amber-500 to-amber-600',
 }
 const GRADIENT_DEFAULT = 'from-primary-500 to-primary-600'
 
@@ -113,6 +131,8 @@ const GRADIENT_TEXT: Record<Platform, string> = {
   gemini: 'text-blue-100',
   deepseek: 'text-cyan-100',
   minimax: 'text-rose-100',
+  zhipu: 'text-indigo-100',
+  seedance: 'text-amber-100',
 }
 const GRADIENT_TEXT_DEFAULT = 'text-primary-100'
 
@@ -123,13 +143,15 @@ const GRADIENT_SUBTEXT: Record<Platform, string> = {
   gemini: 'text-blue-200',
   deepseek: 'text-cyan-200',
   minimax: 'text-rose-200',
+  zhipu: 'text-indigo-200',
+  seedance: 'text-amber-200',
 }
 const GRADIENT_SUBTEXT_DEFAULT = 'text-primary-200'
 
 // ── Public API ──────────────────────────────────────────────────────
 
 function isPlatform(p: string): p is Platform {
-  return p === 'anthropic' || p === 'openai' || p === 'antigravity' || p === 'gemini' || p === 'deepseek' || p === 'minimax'
+  return p === 'anthropic' || p === 'openai' || p === 'antigravity' || p === 'gemini' || p === 'deepseek' || p === 'minimax' || p === 'zhipu' || p === 'seedance'
 }
 
 export function platformBadgeClass(p: string): string {
@@ -184,6 +206,8 @@ export function platformLabel(p: string): string {
     case 'gemini': return 'Gemini'
     case 'deepseek': return 'DeepSeek'
     case 'minimax': return 'MiniMax'
+    case 'zhipu': return '智谱GLM'
+    case 'seedance': return 'Seedance'
     default: return p || 'API'
   }
 }

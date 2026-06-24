@@ -84,6 +84,11 @@ const BulkEditAccountModalStub = {
   template: '<div data-test="bulk-edit-modal" :data-show="String(show)" :data-target-mode="target?.mode ?? \'\'"></div>'
 }
 
+const EditAccountModalStub = {
+  props: ['groups'],
+  template: '<div data-test="edit-account-groups-count">{{ groups.length }}</div>'
+}
+
 describe('admin AccountsView bulk edit scope', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -109,6 +114,66 @@ describe('admin AccountsView bulk edit scope', () => {
     getBatchTodayStats.mockResolvedValue({ stats: {} })
     getAllProxies.mockResolvedValue([])
     getAllGroups.mockResolvedValue([])
+  })
+
+  it('loads groups even when proxies are unavailable for operator admins', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    getAllProxies.mockRejectedValue(new Error('forbidden'))
+    getAllGroups.mockResolvedValue([
+      {
+        id: 7,
+        name: 'Anthropic',
+        platform: 'anthropic',
+        status: 'active',
+        rate_multiplier: 1,
+        is_exclusive: false,
+        subscription_type: 'standard'
+      }
+    ])
+
+    const wrapper = mount(AccountsView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          TablePageLayout: {
+            template: '<div><slot name="filters" /><slot name="table" /><slot name="pagination" /></div>'
+          },
+          DataTable: DataTableStub,
+          Pagination: true,
+          ConfirmDialog: true,
+          AccountTableActions: { template: '<div><slot name="beforeCreate" /><slot name="after" /></div>' },
+          AccountTableFilters: { template: '<div></div>' },
+          AccountBulkActionsBar: AccountBulkActionsBarStub,
+          AccountActionMenu: true,
+          ImportDataModal: true,
+          ReAuthAccountModal: true,
+          AccountTestModal: true,
+          AccountStatsModal: true,
+          ScheduledTestsPanel: true,
+          SyncFromCrsModal: true,
+          TempUnschedStatusModal: true,
+          ErrorPassthroughRulesModal: true,
+          TLSFingerprintProfilesModal: true,
+          CreateAccountModal: true,
+          EditAccountModal: EditAccountModalStub,
+          BulkEditAccountModal: BulkEditAccountModalStub,
+          PlatformTypeBadge: true,
+          AccountCapacityCell: true,
+          AccountStatusIndicator: true,
+          AccountTodayStatsCell: true,
+          AccountGroupsCell: true,
+          AccountUsageCell: true,
+          Icon: true
+        }
+      }
+    })
+
+    await flushPromises()
+
+    expect(getAllGroups).toHaveBeenCalledTimes(1)
+    expect(wrapper.get('[data-test="edit-account-groups-count"]').text()).toBe('1')
+
+    consoleError.mockRestore()
   })
 
   it('opens bulk edit in filtered-results mode from the bulk actions dropdown', async () => {
